@@ -1,0 +1,7 @@
+.ant-menu {
+    .ant-menu-item, .ant-menu-submenu-title {
+        i.anticon {
+            @apply relative -top-1;
+        }
+    }
+}

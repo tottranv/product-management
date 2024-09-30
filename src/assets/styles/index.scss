@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  color: inherit;
+  margin: 0;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+  scroll-behavior: auto;
+  -webkit-overflow-scrolling: touch;
+  line-height: 1;
+  @apply text-emerald-800;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* @font-face {
+  font-family: 'Lab-Black';
+  src: url(./assets/fonts/LabGrotesque-Black.woff2) format('woff2');
+} */
+
+/* You can add global styles to this file, and also import other style files */
+@import './custom.scss';

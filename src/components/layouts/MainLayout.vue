@@ -32,8 +32,6 @@ export default {
 
 <style>
 #components-layout-demo-side .logo {
-    height: 32px;
-    background: rgba(255, 255, 255, 0.2);
-    margin: 16px;
+    @apply h-[32px] bg-white bg-opacity-20 m-[16px];
 }
 </style>
