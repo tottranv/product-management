@@ -5,10 +5,10 @@ Vue.use(Vuex);
 
 //fake list:
 const initialProducts = [
-    { id: 1, name: 'Laptop Sony 12"', desc: 'Laptop Sony 13 inch sản phẩm mới được yêu thích', in_stock: true, price: 22000000 },
-    { id: 2, name: 'Laptop Samsung 13"', desc: 'Laptop Samsung 13 inch sản phẩm mới được yêu thích', in_stock: true, price: 23000000 },
-    { id: 3, name: 'Laptop Toshiba 14"', desc: 'Laptop Toshiba 14 inch sản phẩm mới được yêu thích', in_stock: true, price: 24000000 },
-    { id: 4, name: 'Laptop Dell 15"', desc: 'Laptop Dell 15 inch sản phẩm mới được yêu thích', in_stock: true, price: 25000000 },
+    { id: 1, name: 'Sony 12"', desc: 'Laptop Sony 13 inch sản phẩm mới được yêu thích', in_stock: true, price: 22000000 },
+    { id: 2, name: 'Samsung 13"', desc: 'Laptop Samsung 13 inch sản phẩm mới được yêu thích', in_stock: true, price: 23000000 },
+    { id: 3, name: 'Toshiba 14"', desc: 'Laptop Toshiba 14 inch sản phẩm mới được yêu thích', in_stock: true, price: 24000000 },
+    { id: 4, name: 'Dell 15"', desc: 'Laptop Dell 15 inch sản phẩm mới được yêu thích', in_stock: true, price: 25000000 },
 ];
 
 export default new Vuex.Store({

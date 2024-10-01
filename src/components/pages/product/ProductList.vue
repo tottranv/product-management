@@ -39,19 +39,52 @@
             </div>
         </div>
 
-        <!-- list -->
-        <ul>
-            <li class="border p-3 hover:bg-gray-100 flex items-center justify-between"
-                v-for="(product, index) in filterdProducts" :key="index">
-                {{ product.name }}
-                <a-button-group class="flex gap-x-2">
-                    <a-button @click="go(`/product/edit/${product.id}`)" class="flex items-center"><a-icon
-                            theme="outlined" type="edit" /></a-button>
-                    <a-button @click="handleDelete(product.id)" type="danger" class="flex items-center"><a-icon
-                            type="delete" /></a-button>
-                </a-button-group>
-            </li>
-        </ul>
+        <!-- new UI product list -->
+        <a-list :data-source="filterdProducts" class="border rounded my-2 p-3" :loading="loading">
+            <!-- header zone -->
+            <div slot="header" class="border p-3 hover:bg-gray-100 flex items-center justify-between"
+                :class="sort.type === 'name' && '[>span]:font-bold'">
+                <span class="flex items-center gap-1 cursor-pointer">
+                    <span @click="setSort('name')"
+                        class="flex items-center justify-between hover:opacity-75 hover:underline">
+                        <a-icon
+                            :type="`arrow-${sort.currentSort && sort.currentSort.type === 'name' && sort.currentSort.by ? 'up' : 'down'}`"
+                            v-show="sort.enable && sort.currentSort.type === 'name'"></a-icon>
+                        Product's info
+                    </span>
+                    <a-icon v-if="sort.currentSort && sort.currentSort.type === 'name'" type="close"
+                        v-show="sort.enable" @click="removeSort"></a-icon>
+                </span>
+
+                <span class="flex items-center gap-1 cursor-pointer">
+                    <span @click="setSort('price')"
+                        class="flex items-center justify-between hover:opacity-75 hover:underline">
+                        <a-icon
+                            :type="`arrow-${sort.currentSort && sort.currentSort.type === 'price' && sort.currentSort.by ? 'up' : 'down'}`"
+                            v-show="sort.enable && sort.currentSort.type === 'price'"></a-icon>
+                        Price
+                    </span>
+                    <a-icon v-if="sort.currentSort && sort.currentSort.type === 'price'" type="close"
+                        v-show="sort.enable" @click="removeSort"></a-icon>
+                </span>
+
+                <span>Action</span>
+            </div>
+
+            <!-- item zone -->
+            <a-list-item slot="renderItem" slot-scope="item">
+                <a-button slot="actions" @click="go(`/product/edit/${item.id}`)" class="flex items-center"><a-icon
+                        theme="outlined" type="edit" /></a-button>
+                <a-button slot="actions" @click="handleDelete(item.id)" type="danger" class="flex items-center"><a-icon
+                        type="delete" /></a-button>
+
+                <a-list-item-meta :description="item.desc">
+                    <a slot="title">{{ item.name }}</a>
+                    <a-avatar slot="avatar" src="https://dummyjson.com/image/80"></a-avatar>
+                </a-list-item-meta>
+                <div class="text-green-500 font-bold">{{ item.price.toLocaleString() }}đ</div>
+            </a-list-item>
+        </a-list>
     </div>
 </template>
 <script>
@@ -69,13 +102,44 @@ export default {
                 sort: {
                     showSort: true,
                 }
-            }
+            },
+            //fields for product data:
+            loading: false,
+            loadingMore: false,
+            // sorting
+            sort: {
+                enable: false,
+                currentSort: undefined,
+                sortList: [
+                    { type: 'name', by: false, selected: false, },
+                    { type: 'price', by: false, selected: false, },
+                    //note: false='asc', true='desc'//to more easier when process switch sort
+                ],
+            },
         }
     },
     computed: {
         ...mapGetters(['products']),
         filterdProducts() {
-            return this.products.filter(item => this.priceRangeFilter <= item.price);
+            let filtered = [...this.products];
+            filtered = filtered.filter(item => this.priceRangeFilter <= item.price);
+
+            //if sort enabled:
+            if (this.sort.enable) {
+                const { by, type } = this.sort.sortList.find(item => item.selected);
+                filtered = filtered.sort((a, b) => {
+                    switch (type) {
+                        case 'name': {
+                            return by ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+                        }
+                        case 'price': {
+                            return by ? a.price - b.price : b.price - a.price;
+                        }
+                        default: return 0;
+                    }
+                });
+            }
+            return filtered;
         }
     },
     methods: {
@@ -106,6 +170,22 @@ export default {
         },
         onAfterChange(value) {
             this.priceRangeFilter = value;
+        },
+        removeSort() {
+            this.sort.enable = false;
+        },
+        setSort(name) {
+            this.sort.sortList = [
+                ...this.sort.sortList.map(updateItem => ({ ...updateItem, selected: false })).map(item => {
+                    if (item.type === name) {
+                        const updatedItem = { ...item, selected: true, by: !item.by };
+                        this.sort.currentSort = updatedItem;
+                        return updatedItem;
+                    }
+                    return item;
+                }),
+            ];
+            this.sort.enable = true;
         },
     },
 };
