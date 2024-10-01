@@ -6,12 +6,6 @@
         <!-- settings -->
         <div class="grid grid-cols-4 gap-1 rounded border shadow p-2 mb-2
         [&>div]:border [&>div]:rounded [&>div]:p-2">
-            <label name="show-tooltip" v-if="settings.filters.showPriceRange">
-                Show tooltip:
-                <a-switch @click="!settings.filters.alwaysShowTooltipPriceRange" size="small"
-                    v-model="settings.filters.alwaysShowTooltipPriceRange"><a-icon theme="outlined"
-                        type="plus" /></a-switch>
-            </label>
             <label name="show-price">
                 Show price:
                 <a-switch @click="!settings.filters.showPriceRange" size="small"
@@ -30,9 +24,8 @@
             <div v-if="settings.filters.showPriceRange">
                 Filter by price:
                 <a-slider :min="10000000" :max="100000000" :step="500000" :tip-formatter="formatCurrency"
-                    :default-value="5000000" :tooltip-visible="settings.filters.alwaysShowTooltipPriceRange"
-                    v-model="priceRangeFilter" @afterChange="onAfterChange"></a-slider>
-                <p>{{ priceRangeFilter.toLocaleString() }} đ</p>
+                    :default-value="5000000" v-model="priceRangeFilter" @afterChange="onAfterChange"></a-slider>
+                <p>{{ 'From ' + priceRangeFilter.toLocaleString() }} đ</p>
             </div>
             <div v-if="settings.sort.showSort">
                 Sort
@@ -43,8 +36,8 @@
         <a-list :data-source="filterdProducts" class="border rounded my-2 p-3" :loading="loading">
             <!-- header zone -->
             <div slot="header" class="border p-3 hover:bg-gray-100 flex items-center justify-between"
-                :class="sort.type === 'name' && '[>span]:font-bold'">
-                <span class="flex items-center gap-1 cursor-pointer">
+                :class="sort.type === ' name' && '[>span]:font-bold'">
+                <span class=" flex items-center gap-1 cursor-pointer">
                     <span @click="setSort('name')"
                         class="flex items-center justify-between hover:opacity-75 hover:underline">
                         <a-icon
@@ -122,7 +115,7 @@ export default {
         ...mapGetters(['products']),
         filterdProducts() {
             let filtered = [...this.products];
-            filtered = filtered.filter(item => this.priceRangeFilter <= item.price);
+            filtered = filtered.filter(item => item.price <= this.priceRangeFilter);
 
             //if sort enabled:
             if (this.sort.enable) {
