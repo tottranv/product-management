@@ -11,16 +11,29 @@
                 <a-switch @click="!settings.filters.showPriceRange" size="small"
                     v-model="settings.filters.showPriceRange"><a-icon theme="outlined" type="plus" /></a-switch>
             </label>
+            <label name="show-price">
+                Show view options:
+                <a-switch @click="!settings.otherFilter.showOtherFilter" size="small"
+                    v-model="settings.otherFilter.showOtherFilter"><a-icon theme="outlined" type="plus" /></a-switch>
+            </label>
         </div>
 
         <!-- filters /  sort -->
-        <div v-if="settings.filters.showPriceRange || settings.sort.showSort" class="grid grid-cols-1 gap-4 rounded border shadow p-2 mb-2
+        <div v-if="settings.filters.showPriceRange || settings.sort.showSort" class="grid grid-cols-2 gap-4 rounded border shadow p-2 mb-2
         [&>div]:border [&>div]:rounded [&>div]:p-2">
             <div v-if="settings.filters.showPriceRange">
                 Filter by price:
                 <a-slider :min="10000000" :max="100000000" :step="500000" :tip-formatter="formatCurrency"
                     :default-value="5000000" v-model="priceRangeFilter" @afterChange="onAfterChange"></a-slider>
                 <p>{{ 'From ' + priceRangeFilter.toLocaleString() }} đ</p>
+            </div>
+            <div v-if="settings.otherFilter.showOtherFilter" class="grid grid-cols-1 gap-2">
+                <div>
+                    <span>Page size:</span>
+                    <a-slider :min="10" :max="100" :step="10" :default-value="10" v-model="pageSize"
+                        @afterChange="onPageSizeAfterChange"></a-slider>
+                    <p>{{ pageSize + ' elements each page' }}</p>
+                </div>
             </div>
         </div>
 
@@ -84,9 +97,9 @@ export default {
                     alwaysShowTooltipPriceRange: true,
                     showPriceRange: true,
                 },
-                sort: {
-                    showSort: true,
-                }
+                otherFilter: {
+                    showOtherFilter: true,
+                },
             },
             //fields for product data:
             loading: false,
@@ -101,6 +114,8 @@ export default {
                     //note: false='asc', true='desc'//to more easier when process switch sort
                 ],
             },
+            //paging
+            pageSize: 10,
         }
     },
     computed: {
@@ -125,7 +140,15 @@ export default {
                 });
             }
             return filtered;
-        }
+        },
+        pagination() {
+            const totalPage = Math.ceil(this.filterdProducts.length / this.pageSize);
+            const totalElements = this.filterdProducts.length;
+            return {
+                totalPage,
+                totalElements,
+            };
+        },
     },
     methods: {
         ...mapActions(['deleteProduct']),
@@ -171,6 +194,9 @@ export default {
                 }),
             ];
             this.sort.enable = true;
+        },
+        onPageSizeAfterChange(value) {
+            this.pageSize = value;
         },
     },
 };
