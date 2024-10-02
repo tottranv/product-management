@@ -3,13 +3,27 @@ import Vue from 'vue';
 
 Vue.use(Vuex);
 
+//dump generating a big list:
+const generatingAList = (num) => {
+    const tempList = [];
+    const names = ['Sony', 'Samsung', 'Apple', 'Toshiba', 'Dell'];
+    const middleNames = ['Alpha', 'Inspiration', 'Intelligence', 'New Generation', 'Sirius'];
+    const inches = [12, 13, 14, 15, 16];
+    for (let i = 0; i < num; i++) {
+        const nameIndex = Math.floor(Math.random() * names.length);
+        const midNameIndex = Math.floor(Math.random() * middleNames.length);
+        const inIndex = Math.floor(Math.random() * inches.length);
+        const name = `${names[nameIndex]} ${middleNames[midNameIndex]} ${inches[inIndex]}`;
+        const price = Math.floor(Math.random() * 80 + 10) * 1000000;
+        tempList.push({
+            id: i + 1, name: `${name}" ${Date.now() + i}`, desc: `Laptop ${name} inch sản phẩm mới được yêu thích`, in_stock: true, price
+        });
+    }
+    return tempList;
+}
+
 //fake list:
-const initialProducts = [
-    { id: 1, name: 'Sony 12"', desc: 'Laptop Sony 13 inch sản phẩm mới được yêu thích', in_stock: true, price: 22000000 },
-    { id: 2, name: 'Samsung 13"', desc: 'Laptop Samsung 13 inch sản phẩm mới được yêu thích', in_stock: true, price: 23000000 },
-    { id: 3, name: 'Toshiba 14"', desc: 'Laptop Toshiba 14 inch sản phẩm mới được yêu thích', in_stock: true, price: 24000000 },
-    { id: 4, name: 'Dell 15"', desc: 'Laptop Dell 15 inch sản phẩm mới được yêu thích', in_stock: true, price: 25000000 },
-];
+const initialProducts = generatingAList(100);
 
 export default new Vuex.Store({
     state: {
