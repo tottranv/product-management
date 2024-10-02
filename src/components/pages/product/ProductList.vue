@@ -11,11 +11,6 @@
                 <a-switch @click="!settings.filters.showPriceRange" size="small"
                     v-model="settings.filters.showPriceRange"><a-icon theme="outlined" type="plus" /></a-switch>
             </label>
-            <label name="show-price">
-                Show view options:
-                <a-switch @click="!settings.otherFilter.showOtherFilter" size="small"
-                    v-model="settings.otherFilter.showOtherFilter"><a-icon theme="outlined" type="plus" /></a-switch>
-            </label>
         </div>
 
         <!-- filters /  sort -->
@@ -26,14 +21,6 @@
                 <a-slider :min="10000000" :max="100000000" :step="500000" :tip-formatter="formatCurrency"
                     v-model="priceRangeFilter" @afterChange="onAfterChange"></a-slider>
                 <p>{{ 'From ' + priceRangeFilter.toLocaleString() }} đ</p>
-            </div>
-            <div v-if="settings.otherFilter.showOtherFilter" class="grid grid-cols-1 gap-2">
-                <div>
-                    <span>Page size:</span>
-                    <a-slider :min="10" :max="100" :step="10" :default-value="10" v-model="pageSize"
-                        @afterChange="onPageSizeAfterChange"></a-slider>
-                    <p>{{ pageSize + ' elements each page' }}</p>
-                </div>
             </div>
         </div>
 
@@ -97,9 +84,6 @@ export default {
                 filters: {
                     alwaysShowTooltipPriceRange: true,
                     showPriceRange: true,
-                },
-                otherFilter: {
-                    showOtherFilter: true,
                 },
             },
             //fields for product data:
