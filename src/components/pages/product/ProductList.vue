@@ -9,7 +9,7 @@
             <label name="show-price">
                 Show filter:
                 <a-switch @click="!settings.filters.showPriceRange" size="small"
-                    v-model="settings.filters.showPriceRange"><a-icon theme="outlined" type="plus" /></a-switch>
+                    v-model="settings.filters.showPriceRange"></a-switch>
             </label>
         </div>
 
@@ -25,8 +25,12 @@
         </div>
 
         <!-- new UI product list -->
-        <a-list :data-source="filterdProducts" class="border rounded my-2 p-3 max-h-[50vh] overflow-auto"
-            :loading="loading" @scroll="onScroll">
+        <a-list ref="productList" size="small" :data-source="filterdProducts" class="border rounded my-2 p-3"
+            :loading="loading">
+
+            <!-- max-h-[50vh] overflow-auto -->
+            <!-- @scroll="onScroll" -->
+
             <!-- header zone -->
             <div slot="header" class="border p-3 hover:bg-gray-100 flex items-center justify-between"
                 :class="sort.type === ' name' && '[>span]:font-bold'">
@@ -58,7 +62,7 @@
             </div>
 
             <!-- item zone -->
-            <a-list-item slot="renderItem" slot-scope="item">
+            <a-list-item slot="renderItem" slot-scope="item" class="hover:border-green-500 hover:bg-gray-100 p-2">
                 <a-button slot="actions" @click="go(`/product/edit/${item.id}`)" class="flex items-center"><a-icon
                         theme="outlined" type="edit" /></a-button>
                 <a-button slot="actions" @click="handleDelete(item.id)" type="danger" class="flex items-center"><a-icon
@@ -85,6 +89,11 @@ export default {
                     alwaysShowTooltipPriceRange: true,
                     showPriceRange: true,
                 },
+                view: {
+                    layout: {
+                        horizontal: true,
+                    },
+                },
             },
             //fields for product data:
             loading: false,
@@ -101,6 +110,8 @@ export default {
             },
             //paging
             pageSize: 10,
+            //list inside a-list product:
+            ulList: null,
         }
     },
     computed: {
@@ -137,6 +148,19 @@ export default {
     },
     mounted() {
         this.initialProducts();
+
+        this.$nextTick(() => {
+            this.list = this.$refs.productList.$el.querySelector('ul');
+            if (this.list) {
+                this.list.classList.add('max-h-[50vh]', 'overflow-auto');
+                this.list.addEventListener('scroll', this.onScroll);
+            }
+        })
+    },
+    destroyed() {
+        if (this.list) {
+            this.list.removeEventListener('scroll', this.onScroll);
+        }
     },
     methods: {
         ...mapActions(['initialProducts', 'loadMoreProducts', 'deleteProduct']),
