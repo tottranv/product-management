@@ -24,7 +24,7 @@
             <div v-if="settings.filters.showPriceRange">
                 Filter by price:
                 <a-slider :min="10000000" :max="100000000" :step="500000" :tip-formatter="formatCurrency"
-                    :default-value="5000000" v-model="priceRangeFilter" @afterChange="onAfterChange"></a-slider>
+                    v-model="priceRangeFilter" @afterChange="onAfterChange"></a-slider>
                 <p>{{ 'From ' + priceRangeFilter.toLocaleString() }} đ</p>
             </div>
             <div v-if="settings.otherFilter.showOtherFilter" class="grid grid-cols-1 gap-2">
@@ -38,7 +38,8 @@
         </div>
 
         <!-- new UI product list -->
-        <a-list :data-source="filterdProducts" class="border rounded my-2 p-3" :loading="loading">
+        <a-list :data-source="filterdProducts" class="border rounded my-2 p-3 max-h-[50vh] overflow-auto"
+            :loading="loading" @scroll="onScroll">
             <!-- header zone -->
             <div slot="header" class="border p-3 hover:bg-gray-100 flex items-center justify-between"
                 :class="sort.type === ' name' && '[>span]:font-bold'">
@@ -91,7 +92,7 @@ import { mapGetters, mapActions } from 'vuex';
 export default {
     data() {
         return {
-            priceRangeFilter: 10000000,
+            priceRangeFilter: 50000000,
             settings: {
                 filters: {
                     alwaysShowTooltipPriceRange: true,
@@ -150,8 +151,11 @@ export default {
             };
         },
     },
+    mounted() {
+        this.initialProducts();
+    },
     methods: {
-        ...mapActions(['deleteProduct']),
+        ...mapActions(['initialProducts', 'loadMoreProducts', 'deleteProduct']),
         go(path) {
             this.$router.push(path);
         },
@@ -198,7 +202,18 @@ export default {
         onPageSizeAfterChange(value) {
             this.pageSize = value;
         },
+        onScroll(event) {
+            const target = event.target;
+            // check scroll end list:
+            if (target.scrollTop + target.clientHeight >= target.scrollHeight - 50) {
+                this.loading = true;
+                this.loadMoreProducts({ limit: this.pageSize }).then(() => {
+                    setTimeout(() => {
+                        this.loading = false;
+                    }, 1000);
+                })
+            }
+        },
     },
 };
 </script>
-<style></style>

@@ -27,10 +27,16 @@ const initialProducts = generatingAList(100);
 
 export default new Vuex.Store({
     state: {
-        products: initialProducts,
+        products: [],
         viewProduct: null,
     },
     mutations: {
+        initialProducts(state, products) {
+            state.products = products;
+        },
+        loadMoreProducts(state, moreProducts) {
+            state.products = state.products.concat(moreProducts);
+        },
         addProduct(state, product) {
             state.products.push(product);
         },
@@ -42,6 +48,15 @@ export default new Vuex.Store({
         },
     },
     actions: {
+        initialProducts({ commit }) {
+            const list = initialProducts.slice(0, 10);
+            commit('initialProducts', list);
+        },
+        loadMoreProducts({ commit, state }, {limit = 10}) {
+            const nextIndex = state.products.length - 1;
+            const list =  initialProducts.slice(nextIndex, Math.min(nextIndex + limit));
+            commit('loadMoreProducts', list);
+        },
         addProduct({ commit, state }, product) {
             //check1
             const productExists = state.products.some(item => item.name === product.name);
