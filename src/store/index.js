@@ -25,12 +25,29 @@ const generatingAList = (num) => {
 //fake list:
 const initialProducts = generatingAList(100);
 
+async function fetchMe(accessToken) {
+    return await fetch('https://dummyjson.com/auth/me', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`, // Pass JWT via Authorization header
+        },
+        // credentials: 'include' // Include cookies (e.g., accessToken) in the request
+    });
+}
+
 export default new Vuex.Store({
     state: {
         products: [],
+        user: null,
         viewProduct: null,
     },
     mutations: {
+        me(state, user) {
+            state.user = user;
+        },
+        login(state, user) {
+            state.user = user;
+        },
         initialProducts(state, products) {
             state.products = products;
         },
@@ -48,12 +65,125 @@ export default new Vuex.Store({
         },
     },
     actions: {
+        async me({ commit }) {
+            //prepare accessToken
+            const accessToken = localStorage.getItem('accessToken');
+            if (accessToken) {
+                try {
+                    // fetch me by accessToken
+                    const firstGetMeResponse = await fetchMe(accessToken);
+
+                    // accessToken expired:
+                    if(firstGetMeResponse.status === 401){
+                        // prepare refreshToken
+                        const refreshToken = localStorage.getItem('refreshToken');
+                        if(refreshToken) {
+
+                            // re get accessToken by refreshToken:
+                            const refreshResponse = await fetch('https://dummyjson.com/auth/refresh', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                  refreshToken, // Optional, if not provided, the server will use the cookie
+                                  expiresInMins: 60 * 24 * 30, //30 days // optional (FOR ACCESS TOKEN), defaults to 60
+                                }),
+                                // credentials: 'include' // Include cookies (e.g., accessToken) in the request
+                            });
+
+                            // re get accessToken error:
+                            if(!refreshResponse.ok) {
+                                return Promise.reject('Fail re get accessToken.', refreshResponse);
+                            }
+
+                            // if ok:
+                            const refetchTokenData = await refreshResponse.json();//re get tokens
+
+                            // check tokens:
+                            if(refetchTokenData && 'accessToken' in refetchTokenData && 'refreshToken' in refetchTokenData) {
+                                // save tokens:
+                                localStorage.setItem('accessToken', refetchTokenData.accessToken);
+                                localStorage.setItem('refreshToken', refetchTokenData.refreshToken);
+
+                                // re get me:
+                                const secondGetMeResponse = await fetchMe(refetchTokenData.accessToken);
+                                
+                                // get me failed:
+                                if(!secondGetMeResponse.ok) {
+                                    return Promise.reject('Fail get me again', secondGetMeResponse);
+                                }
+
+                                // if re get me ok:
+                                const reGetMeData = await secondGetMeResponse.json();
+                                if('username' in reGetMeData) {
+                                    // console.log('getted user at 2', reGetMeData);
+                                    
+                                    commit('me', reGetMeData);
+                                    return Promise.resolve('Success re get me.');
+                                } else {
+                                    return Promise.reject('User is unvalid');
+                                }
+                            } else {
+                                return Promise.reject('Re get tokens unvalid');
+                            }
+                        } else {
+                            return Promise.reject('Refresh token expired');
+                        }
+                    } else {
+                        const meData = await firstGetMeResponse.json();
+                        // console.log('getted user at 1', meData);
+
+                        commit('me', meData);
+                        return Promise.resolve('Success to get user info');
+                    }
+                } catch (error) {
+                    return Promise.reject('Fail to get user info');
+                }
+            } else {
+                return Promise.reject('Dont have access token. Please login.');
+            }
+        },
+        async login({ commit }, { username, password }) {
+            try {
+                const response = await fetch('https://dummyjson.com/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      username,
+                      password,
+                      expiresInMins: 30,
+                    }),
+                    // credentials: 'include'
+                });
+
+                if(!response.ok) {
+                    if(response.status===400) {
+                        return Promise.reject('Invalid username or password!');
+                    } else {
+                        const jsonError = await response.json();
+                        if('message' in jsonError) {
+                            return Promise.reject(`Error: ${jsonError.message}`);
+                        }
+                        // throw new Error(`HTTP error! status: ${response.status}`);
+                        return Promise.reject(`Error: ${JSON.stringify(jsonError)}`);
+                    }
+                }
+
+                const jsonLogin = await response.json();
+                localStorage.setItem('accessToken', jsonLogin.accessToken);
+                localStorage.setItem('refreshToken', jsonLogin.refreshToken);
+                commit('login', jsonLogin);
+                return Promise.resolve('Success to login');
+            } catch (error) {
+                return Promise.reject('Error login:', 'message' in error ? error.message : error);
+            }
+        },
         async fetchProducts({ commit }, {limit = 10, exchangeRate = 24600, convertToLocaleAmountOnly}) {
             const url = `https://dummyjson.com/products?limit=${limit}&select=id,title,price,description,stock,images,thumbnail`;
             try {
                 const response = await fetch(url);
                 if(!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    // throw new Error(`HTTP error! status: ${response.status}`);
+                    return Promise.reject(`HTTP error! status: ${response.status}`);
                 }
                 const { products } = await response.json();
                 if(products && Array.isArray(products)) {
@@ -66,11 +196,12 @@ export default new Vuex.Store({
                         in_stock: stock,
                     }));
                     commit('initialProducts', convertProducts);
+                    return Promise.resolve('Success to fetch product.');
                 } else {
-                    console.error('Invalid data format:', products);
+                    return Promise.reject('Invalid data format:', products);
                 }
             } catch (error) {
-                console.error('Error fetching products:', error);
+                return Promise.reject('Error fetching products:', error);
             }
         },
         loadMoreProducts({ commit, state }, {limit = 10}) {
@@ -117,5 +248,6 @@ export default new Vuex.Store({
     getters: {
         products:  (state) => state.products,
         viewProduct: (state) => state.viewProduct,
+        user: (state) => state.user,
     }
 });

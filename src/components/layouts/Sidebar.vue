@@ -21,7 +21,10 @@
             <a-sub-menu key="sub2">
                 <span slot="title"><a-icon type="user" /><span>User</span></span>
                 <a-menu-item key="3">
-                    Profile
+                    <router-link to="/profile">
+                        <a-icon type="user" />
+                        Profile
+                    </router-link>
                 </a-menu-item>
             </a-sub-menu>
             <a-menu-item key="4">
@@ -42,7 +45,8 @@ export default {
     },
     methods: {
         handleSignout() {
-            localStorage.removeItem('token');
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
             this.$router.push('/auth/login');
         }
     }

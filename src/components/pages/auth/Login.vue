@@ -2,7 +2,7 @@
     <a-form layout="inline" :form="form" @submit="handleSubmit">
         <a-form-item :validate-status="userNameError() ? 'error' : ''" :help="userNameError() || ''">
             <a-input v-decorator="[
-                'userName',
+                'username',
                 { rules: [{ required: true, message: 'Please input your username!' }] },
             ]" placeholder="Username">
                 <a-icon slot="prefix" type="user" class="text-tran25" />
@@ -16,6 +16,7 @@
                 <a-icon slot="prefix" type="lock" class="text-tran25" />
             </a-input>
         </a-form-item>
+        <p>Hint: <code>emilys</code>/<code>emilyspass</code></p>
         <a-form-item>
             <a-button type="primary" html-type="submit" :disabled="hasErrors(form.getFieldsError())">
                 Log in
@@ -25,6 +26,8 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
+
 function hasErrors(fieldsError) {
     return Object.keys(fieldsError).some(field => fieldsError[field]);
 }
@@ -43,10 +46,11 @@ export default {
         });
     },
     methods: {
+        ...mapActions(['login']),
         // Only show error after a field is touched.
         userNameError() {
             const { getFieldError, isFieldTouched } = this.form;
-            return isFieldTouched('userName') && getFieldError('userName');
+            return isFieldTouched('username') && getFieldError('username');
         },
         // Only show error after a field is touched.
         passwordError() {
@@ -58,8 +62,18 @@ export default {
             this.form.validateFields((err) => {//,values
                 if (!err) {
                     // console.log('Received values of form: ', values);
-                    localStorage.setItem('token', 'abcx');
-                    this.$router.push('/product/list');
+                    const username = this.form.getFieldValue('username');
+                    const password = this.form.getFieldValue('password');
+                    try {
+                        this.login({ username, password }).then(() => {
+                            this.$router.push('/product/list');
+                            this.$message.success(err);
+                        }).catch(err => {
+                            this.$message.error(err);
+                        })
+                    } catch (error) {
+                        this.$message.error(`Login fail you to some problems: ${error}`);
+                    }
                 }
             });
         },
