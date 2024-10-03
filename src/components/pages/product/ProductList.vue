@@ -146,14 +146,16 @@ export default {
             };
         },
     },
+    created() {
+        this.initialProducts(); // Fetch dữ liệu ngay khi component được tạo
+    },
     mounted() {
-        this.initialProducts();
-
         this.$nextTick(() => {
             this.list = this.$refs.productList.$el.querySelector('ul');
             if (this.list) {
                 this.list.classList.add('max-h-[50vh]', 'overflow-auto');
-                this.list.addEventListener('scroll', this.onScroll);
+                const debounced = this.$helpers.debounce(this.onScroll, 1000);
+                this.list.addEventListener('scroll', debounced);
             }
         })
     },
