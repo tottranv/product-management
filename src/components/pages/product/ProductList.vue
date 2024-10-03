@@ -70,7 +70,7 @@
 
                 <a-list-item-meta :description="item.desc">
                     <a slot="title">{{ item.name }}</a>
-                    <a-avatar slot="avatar" src="https://dummyjson.com/image/80"></a-avatar>
+                    <a-avatar slot="avatar" :src="item.thumbnail"></a-avatar>
                 </a-list-item-meta>
                 <div class="text-green-500 font-bold">{{ item.price.toLocaleString() }}đ</div>
             </a-list-item>
@@ -118,7 +118,9 @@ export default {
         ...mapGetters(['products']),
         filterdProducts() {
             let filtered = [...this.products];
-            filtered = filtered.filter(item => item.price <= this.priceRangeFilter);
+            filtered = filtered.filter(item => {
+                return item.price <= this.priceRangeFilter
+            });
 
             //if sort enabled:
             if (this.sort.enable) {

@@ -8,7 +8,11 @@ import { mapActions } from 'vuex';
 export default {
   name: 'ProductManagementApp',
   created() {
-    this.initialProducts();
+    this.$store.dispatch('fetchProducts', {
+      limit: undefined,
+      exchangeRate: 24500,
+      convertToLocaleAmountOnly: this.$helpers.convertToLocaleAmountOnly
+    });
   },
   methods: {
     ...mapActions(['initialProducts']),

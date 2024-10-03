@@ -49,14 +49,39 @@ export default new Vuex.Store({
         },
     },
     actions: {
-        initialProducts({ commit, state }) {
+        async fetchProducts({ commit }, {limit = 10, exchangeRate = 24600, convertToLocaleAmountOnly}) {
+            const url = `https://dummyjson.com/products?limit=${limit}&select=id,title,price,description,stock,images,thumbnail`;
+            try {
+                const response = await fetch(url);
+                if(!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const { products } = await response.json();
+                if(products && Array.isArray(products)) {
+                    const convertProducts = products.map(({
+                        id,title,price,description,stock,images,thumbnail
+                    }) => ({
+                        id, name: title,
+                        price: convertToLocaleAmountOnly(exchangeRate, price), description,
+                        images, thumbnail,
+                        in_stock: stock,
+                    }));
+                    commit('initialProducts', convertProducts);
+                } else {
+                    console.error('Invalid data format:', products);
+                }
+            } catch (error) {
+                console.error('Error fetching products:', error);
+            }
+        },
+        initialProducts({ commit, state }) {    
             const list = tempCheck > 0 ? state.products.slice(0, 10) : initialProducts.slice(0, 10);
             commit('initialProducts', list);
             tempCheck++;
         },
         loadMoreProducts({ commit, state }, {limit = 10}) {
             const nextIndex = state.products.length - 1;
-            const list =  initialProducts.slice(nextIndex, Math.min(nextIndex + limit));
+            const list = initialProducts.slice(nextIndex, Math.min(nextIndex + limit));
             commit('loadMoreProducts', list);
         },
         getProductById({ state }, id) {
