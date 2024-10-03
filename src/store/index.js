@@ -24,6 +24,7 @@ const generatingAList = (num) => {
 
 //fake list:
 const initialProducts = generatingAList(100);
+let tempCheck = 0;
 
 export default new Vuex.Store({
     state: {
@@ -48,9 +49,10 @@ export default new Vuex.Store({
         },
     },
     actions: {
-        initialProducts({ commit }) {
-            const list = initialProducts.slice(0, 10);
+        initialProducts({ commit, state }) {
+            const list = tempCheck > 0 ? state.products.slice(0, 10) : initialProducts.slice(0, 10);
             commit('initialProducts', list);
+            tempCheck++;
         },
         loadMoreProducts({ commit, state }, {limit = 10}) {
             const nextIndex = state.products.length - 1;
@@ -73,7 +75,7 @@ export default new Vuex.Store({
                 return Promise.reject('Product is not exists');
             }
             //check2
-            const isDublicateWithOther = state.products.some(item => item.name === product.name);
+            const isDublicateWithOther = state.products.some(item => item.id!=product.id && item.name === product.name);
             if(isDublicateWithOther) {
                 return Promise.reject('Has an other Product with this name');
             }
