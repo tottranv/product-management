@@ -3,28 +3,6 @@ import Vue from 'vue';
 
 Vue.use(Vuex);
 
-//dump generating a big list:
-const generatingAList = (num) => {
-    const tempList = [];
-    const names = ['Sony', 'Samsung', 'Apple', 'Toshiba', 'Dell'];
-    const middleNames = ['Alpha', 'Inspiration', 'Intelligence', 'New Generation', 'Sirius'];
-    const inches = [12, 13, 14, 15, 16];
-    for (let i = 0; i < num; i++) {
-        const nameIndex = Math.floor(Math.random() * names.length);
-        const midNameIndex = Math.floor(Math.random() * middleNames.length);
-        const inIndex = Math.floor(Math.random() * inches.length);
-        const name = `${names[nameIndex]} ${middleNames[midNameIndex]} ${inches[inIndex]}`;
-        const price = Math.floor(Math.random() * 80 + 10) * 1000000;
-        tempList.push({
-            id: i + 1, name: `${name}" ${Date.now() + i}`, desc: `Laptop ${name} inch sản phẩm mới được yêu thích`, in_stock: true, price
-        });
-    }
-    return tempList;
-}
-
-//fake list:
-const initialProducts = generatingAList(100);
-
 async function fetchMe(accessToken) {
     return await fetch('https://dummyjson.com/auth/me', {
         method: 'GET',
@@ -177,7 +155,7 @@ export default new Vuex.Store({
                 return Promise.reject('Error login:', 'message' in error ? error.message : error);
             }
         },
-        async fetchProducts({ commit }, {limit = 10, exchangeRate = 24600, convertToLocaleAmountOnly}) {
+        async fetchProducts({ commit }, {limit = 10, exchangeRate = 24600, convertToLocaleAmountOnly, isLoadMore = false}) {
             const url = `https://dummyjson.com/products?limit=${limit}&select=id,title,price,description,stock,images,thumbnail`;
             try {
                 const response = await fetch(url);
@@ -195,7 +173,7 @@ export default new Vuex.Store({
                         images, thumbnail,
                         in_stock: stock,
                     }));
-                    commit('initialProducts', convertProducts);
+                    commit(isLoadMore ? 'loadMoreProducts' : 'initialProducts', convertProducts);
                     return Promise.resolve('Success to fetch product.');
                 } else {
                     return Promise.reject('Invalid data format:', products);
@@ -203,11 +181,6 @@ export default new Vuex.Store({
             } catch (error) {
                 return Promise.reject('Error fetching products:', error);
             }
-        },
-        loadMoreProducts({ commit, state }, {limit = 10}) {
-            const nextIndex = state.products.length - 1;
-            const list = initialProducts.slice(nextIndex, Math.min(nextIndex + limit));
-            commit('loadMoreProducts', list);
         },
         getProductById({ state }, id) {
             return state.products.find(product => product.id === id);

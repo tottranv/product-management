@@ -9,7 +9,7 @@ export const convertToLocale = (exchangeRate, amount,  locale = 'en-US', currenc
 export const convertToLocaleAmountOnly = (exchangeRate, amount) => {
     return amount * exchangeRate;
 }
-
+export const EXCHANGE_RAGE = 24600;
 // const exchangeRate = 1;
 // const amount = 100;
 

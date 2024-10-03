@@ -27,10 +27,6 @@
         <!-- new UI product list -->
         <a-list ref="productList" size="small" :data-source="filterdProducts" class="border rounded my-2 p-3"
             :loading="loading">
-
-            <!-- max-h-[50vh] overflow-auto -->
-            <!-- @scroll="onScroll" -->
-
             <!-- header zone -->
             <div slot="header" class="border p-3 hover:bg-gray-100 flex items-center justify-between"
                 :class="sort.type === ' name' && '[>span]:font-bold'">
@@ -78,6 +74,7 @@
     </div>
 </template>
 <script>
+import { EXCHANGE_RAGE } from '@/helpers';
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
@@ -152,7 +149,7 @@ export default {
         this.$nextTick(() => {
             this.list = this.$refs.productList.$el.querySelector('ul');
             if (this.list) {
-                this.list.classList.add('max-h-[50vh]', 'overflow-auto');
+                this.list.classList.add('max-h-[300px]', 'overflow-auto');
                 const debounced = this.$helpers.debounce(this.onScroll, 1000);
                 this.list.addEventListener('scroll', debounced);
             }
@@ -164,7 +161,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions(['loadMoreProducts', 'deleteProduct']),
+        ...mapActions(['fetchProducts', 'deleteProduct']),
         go(path) {
             this.$router.push(path);
         },
@@ -216,11 +213,14 @@ export default {
             // check scroll end list:
             if (target.scrollTop + target.clientHeight >= target.scrollHeight - 50) {
                 this.loading = true;
-                this.loadMoreProducts({ limit: this.pageSize }).then(() => {
-                    setTimeout(() => {
-                        this.loading = false;
-                    }, 1000);
-                })
+                this.fetchProducts({
+                    limit: undefined,
+                    exchangeRate: EXCHANGE_RAGE,
+                    convertToLocaleAmountOnly: this.$helpers.convertToLocaleAmountOnly,
+                    isLoadMore: true,
+                }).finally(() => {
+                    this.loading = false;
+                });
             }
         },
     },
