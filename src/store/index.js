@@ -59,6 +59,9 @@ export default new Vuex.Store({
             const list =  initialProducts.slice(nextIndex, Math.min(nextIndex + limit));
             commit('loadMoreProducts', list);
         },
+        getProductById({ state }, id) {
+            return state.products.find(product => product.id === id);
+        },
         addProduct({ commit, state }, product) {
             //check1
             const productExists = state.products.some(item => item.name === product.name);
