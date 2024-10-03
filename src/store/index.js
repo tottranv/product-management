@@ -24,7 +24,6 @@ const generatingAList = (num) => {
 
 //fake list:
 const initialProducts = generatingAList(100);
-let tempCheck = 0;
 
 export default new Vuex.Store({
     state: {
@@ -73,11 +72,6 @@ export default new Vuex.Store({
             } catch (error) {
                 console.error('Error fetching products:', error);
             }
-        },
-        initialProducts({ commit, state }) {    
-            const list = tempCheck > 0 ? state.products.slice(0, 10) : initialProducts.slice(0, 10);
-            commit('initialProducts', list);
-            tempCheck++;
         },
         loadMoreProducts({ commit, state }, {limit = 10}) {
             const nextIndex = state.products.length - 1;

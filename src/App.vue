@@ -3,8 +3,6 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
-
 export default {
   name: 'ProductManagementApp',
   created() {
@@ -13,9 +11,6 @@ export default {
       exchangeRate: 24500,
       convertToLocaleAmountOnly: this.$helpers.convertToLocaleAmountOnly
     });
-  },
-  methods: {
-    ...mapActions(['initialProducts']),
   },
 }
 </script>
