@@ -146,9 +146,6 @@ export default {
             };
         },
     },
-    created() {
-        this.initialProducts(); // Fetch dữ liệu ngay khi component được tạo
-    },
     mounted() {
         this.$nextTick(() => {
             this.list = this.$refs.productList.$el.querySelector('ul');
@@ -165,7 +162,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions(['initialProducts', 'loadMoreProducts', 'deleteProduct']),
+        ...mapActions(['loadMoreProducts', 'deleteProduct']),
         go(path) {
             this.$router.push(path);
         },

@@ -3,9 +3,16 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 
 export default {
-  name: 'App',
+  name: 'ProductManagementApp',
+  created() {
+    this.initialProducts();
+  },
+  methods: {
+    ...mapActions(['initialProducts']),
+  },
 }
 </script>
 
