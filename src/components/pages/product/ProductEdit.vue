@@ -4,7 +4,6 @@
             <a-skeleton avatar :paragraph="{ rows: 4 }" />
         </template>
         <template v-else>
-            {{ viewProduct }}
             <a-button @click="handleBack">Back</a-button>
             <a-form :form="form" @submit="handleSubmit" :wrapper-col="{ span: 24 }">
                 <img v-for="(image, index) in viewProduct.images" :key="index"
