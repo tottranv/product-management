@@ -42,8 +42,20 @@ export default {
     computed: {
         ...mapState(['viewProduct']),
     },
+    created() {
+        this.getProductById({ id: this.id });
+    },
+    mounted() {
+        this.$helpers.setBreadcrumbFn([
+            { icon: 'home', link: '/', text: 'Home' },
+            { text: 'Profile' },
+        ], this.setBreadcrumb);
+    },
+    destroyed() {
+        this.$helpers.setBreadcrumbFn([], this.setBreadcrumb);
+    },
     methods: {
-        ...mapActions(['getProductById', 'updateProduct']),
+        ...mapActions(['getProductById', 'updateProduct', 'setBreadcrumb']),
         handleBack() {
             this.$router.back();
         },
@@ -65,9 +77,6 @@ export default {
                 }
             });
         },
-    },
-    created() {
-        this.getProductById({ id: this.id });
     },
     watch: {
         viewProduct: {

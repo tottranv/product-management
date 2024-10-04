@@ -35,8 +35,18 @@ export default {
             form: this.$form.createForm(this, { name: 'productForm' }),
         }
     },
+    mounted() {
+        this.$helpers.setBreadcrumbFn([
+            { icon: 'home', link: '/', text: 'Home' },
+            { icon: 'ordered-list', link: '/', text: 'Products' },
+            { text: 'Add Product' },
+        ], this.setBreadcrumb);
+    },
+    destroyed() {
+        this.$helpers.setBreadcrumbFn([], this.setBreadcrumb);
+    },
     methods: {
-        ...mapActions(['addProduct']),
+        ...mapActions(['addProduct', 'setBreadcrumb']),
         handleBack() {
             this.$router.back();
         },

@@ -4,10 +4,7 @@
         <a-layout>
             <Header />
             <a-layout-content style="margin: 0 16px">
-                <a-breadcrumb style="margin: 16px 0">
-                    <a-breadcrumb-item>Product</a-breadcrumb-item>
-                    <a-breadcrumb-item>Laptop</a-breadcrumb-item>
-                </a-breadcrumb>
+                <Breadcrumb />
                 <div :style="{ padding: '24px', background: '#fff', minHeight: '360px' }">
                     <router-view />
                 </div>
@@ -19,6 +16,7 @@
     </a-layout>
 </template>
 <script>
+import Breadcrumb from './Breadcrumb.vue';
 import Header from './Header.vue';
 import Sidebar from './Sidebar.vue';
 
@@ -26,6 +24,7 @@ export default {
     components: {
         Sidebar,
         Header,
+        Breadcrumb,
     },
 };
 </script>

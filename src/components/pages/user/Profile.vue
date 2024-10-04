@@ -23,12 +23,19 @@ export default {
     name: 'ProfilePage',
     mounted() {
         this.fetchMe();
+        this.$helpers.setBreadcrumbFn([
+            { icon: 'home', link: '/', text: 'Home' },
+            { text: 'Profile' },
+        ], this.setBreadcrumb);
+    },
+    destroyed() {
+        this.$helpers.setBreadcrumbFn([], this.setBreadcrumb);
     },
     computed: {
         ...mapGetters(['user']),
     },
     methods: {
-        ...mapActions(['me']),
+        ...mapActions(['me', 'setBreadcrumb']),
         fetchMe() {
             this.me()
                 .then((result) => {

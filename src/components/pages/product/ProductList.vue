@@ -164,13 +164,21 @@ export default {
             this.setStyle();
         });
     },
+    mounted() {
+        this.$helpers.setBreadcrumbFn([
+            { icon: 'home', link: '/', text: 'Home' },
+            { icon: 'user', link: '/profile', text: 'Profile' },
+            { text: 'Home' },
+        ], this.setBreadcrumb);
+    },
     destroyed() {
         if (this.list) {
             this.list.removeEventListener('scroll', this.onScroll);
         }
+        this.$helpers.setBreadcrumbFn([], this.setBreadcrumb);
     },
     methods: {
-        ...mapActions(['fetchProducts', 'deleteProduct']),
+        ...mapActions(['fetchProducts', 'deleteProduct', 'setBreadcrumb']),
         go(path) {
             this.$router.push(path);
         },

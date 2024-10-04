@@ -18,6 +18,7 @@ export default new Vuex.Store({
         products: [],
         user: null,
         viewProduct: null,
+        breadcrumb: []
     },
     mutations: {
         me(state, user) {
@@ -254,6 +255,9 @@ export default new Vuex.Store({
 
             commit('deleteProduct', id);
             return Promise.resolve('Product is deleted');
+        },
+        setBreadcrumb: ({state}, breadcrumb) => {
+            state.breadcrumb = breadcrumb;
         },
     },
     getters: {
