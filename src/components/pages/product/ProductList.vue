@@ -125,7 +125,7 @@ export default {
             //paging
             pageSize: 10,
             //list inside a-list product:
-            ulList: null,
+            list: null,
         }
     },
     computed: {
@@ -163,11 +163,6 @@ export default {
             this.loading = false;
             this.setStyle();
         });
-    },
-    mounted() {
-        // this.$nextTick(() => {
-        //     this.setStyle();
-        // })
     },
     destroyed() {
         if (this.list) {
