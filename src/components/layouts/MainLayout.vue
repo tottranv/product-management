@@ -16,15 +16,11 @@
     </a-layout>
 </template>
 <script>
-import Breadcrumb from './Breadcrumb.vue';
-import Header from './Header.vue';
-import Sidebar from './Sidebar.vue';
-
 export default {
     components: {
-        Sidebar,
-        Header,
-        Breadcrumb,
+        Sidebar: () => import('./Sidebar.vue'),
+        Header: () => import('./Header.vue'),
+        Breadcrumb: () => import('./Breadcrumb.vue'),
     },
 };
 </script>

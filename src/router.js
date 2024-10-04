@@ -1,12 +1,12 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import ProductList from './components/pages/product/ProductList.vue';
-import ProductAdd from './components/pages/product/ProductAdd.vue';
-import Login from './components/pages/auth/Login.vue';
-import MainLayout from './components/layouts/MainLayout.vue';
-import AuthLayout from './components/layouts/AuthLayout.vue';
-import ProductEdit from './components/pages/product/ProductEdit.vue';
-import Profile from './components/pages/user/Profile.vue';
+const ProductList = () => import('./components/pages/product/ProductList.vue');
+const ProductAdd = () => import('./components/pages/product/ProductAdd.vue');
+const Login = () => import('./components/pages/auth/Login.vue');
+const MainLayout = () => import('./components/layouts/MainLayout.vue');
+const AuthLayout = () => import('./components/layouts/AuthLayout.vue');
+const ProductEdit = () => import('./components/pages/product/ProductEdit.vue');
+const Profile = () => import('./components/pages/user/Profile.vue');
 
 Vue.use(Router);
 
