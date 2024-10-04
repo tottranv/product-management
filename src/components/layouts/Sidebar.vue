@@ -1,5 +1,5 @@
 <template>
-    <a-layout-sider v-model="collapsed" collapsible>
+    <a-layout-sider v-model="collapsed" collapsible @collapse="onCollapse">
         <div class="logo" />
         <a-menu theme="dark" :default-selected-keys="['1']" mode="inline">
             <a-sub-menu key="sub1">
@@ -40,7 +40,7 @@ export default {
     name: 'SiderBar',
     data() {
         return {
-            collapsed: false
+            collapsed: Boolean(Number(localStorage.getItem('sidebarCollapsed'))),
         }
     },
     methods: {
@@ -48,7 +48,10 @@ export default {
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
             this.$router.push('/auth/login');
-        }
+        },
+        onCollapse(collapsed) {
+            localStorage.setItem('sidebarCollapsed', collapsed ? 1 : 0);
+        },
     }
 }
 </script>
