@@ -43,16 +43,16 @@
                 :loading="loading">
                 <!-- header zone -->
                 <div slot="header" class="border p-3 hover:bg-gray-100 flex items-center justify-between"
-                    :class="sort.type === ' name' && '[>span]:font-bold'">
+                    :class="sort.type === 'title' && '[>span]:font-bold'">
                     <span class=" flex items-center gap-1 cursor-pointer">
-                        <span @click="setSort('name')"
+                        <span @click="setSort('title')"
                             class="flex items-center justify-between hover:opacity-75 hover:underline">
                             <a-icon
-                                :type="`arrow-${sort.currentSort && sort.currentSort.type === 'name' && sort.currentSort.by ? 'up' : 'down'}`"
-                                v-show="sort.enable && sort.currentSort.type === 'name'"></a-icon>
+                                :type="`arrow-${sort.currentSort && sort.currentSort.type === 'title' && sort.currentSort.by ? 'up' : 'down'}`"
+                                v-show="sort.enable && sort.currentSort.type === 'title'"></a-icon>
                             Product's info
                         </span>
-                        <a-icon v-if="sort.currentSort && sort.currentSort.type === 'name'" type="close"
+                        <a-icon v-if="sort.currentSort && sort.currentSort.type === 'title'" type="close"
                             v-show="sort.enable" @click="removeSort"></a-icon>
                     </span>
 
@@ -117,7 +117,7 @@ export default {
                 enable: false,
                 currentSort: undefined,
                 sortList: [
-                    { type: 'name', by: false, selected: false, },
+                    { type: 'title', by: false, selected: false, },
                     { type: 'price', by: false, selected: false, },
                     //note: false='asc', true='desc'//to more easier when process switch sort
                 ],
@@ -135,22 +135,6 @@ export default {
             filtered = filtered.filter(item => {
                 return item.price >= this.priceRangeFilter[0] && item.price <= this.priceRangeFilter[1]
             });
-
-            //if sort enabled:
-            if (this.sort.enable) {
-                const { by, type } = this.sort.sortList.find(item => item.selected);
-                filtered = filtered.sort((a, b) => {
-                    switch (type) {
-                        case 'name': {
-                            return by ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
-                        }
-                        case 'price': {
-                            return by ? a.price - b.price : b.price - a.price;
-                        }
-                        default: return 0;
-                    }
-                });
-            }
             return filtered;
         },
         pagination() {
@@ -165,7 +149,14 @@ export default {
     created() {
         this.loading = true;
         this.fetchProducts({
-            limit: undefined,
+            query: {
+                limit: undefined,
+                // 'https://dummyjson.com/products?sortBy=title&order=asc'
+                ...{
+                    ...(this.sort.currentSort ? { sortBy: this.sort.currentSort.type } : {}),
+                    ...(this.sort.currentSort ? { order: this.sort.currentSort.by ? 'asc' : 'desc' } : {}),
+                },
+            },
             exchangeRate: EXCHANGE_RAGE,
             convertToLocaleAmountOnly: this.$helpers.convertToLocaleAmountOnly,
         }).finally(() => {
@@ -218,6 +209,15 @@ export default {
         },
         removeSort() {
             this.sort.enable = false;
+            this.fetchProducts({
+                query: {
+                    limit: undefined,
+                },
+                exchangeRate: EXCHANGE_RAGE,
+                convertToLocaleAmountOnly: this.$helpers.convertToLocaleAmountOnly,
+            }).finally(() => {
+                this.loading = false;
+            });
         },
         setSort(name) {
             this.sort.sortList = [
@@ -225,6 +225,22 @@ export default {
                     if (item.type === name) {
                         const updatedItem = { ...item, selected: true, by: !item.by };
                         this.sort.currentSort = updatedItem;
+
+                        this.fetchProducts({
+                            query: {
+                                limit: undefined,
+                                // 'https://dummyjson.com/products?sortBy=title&order=asc'
+                                ...{
+                                    ...(this.sort.currentSort ? { sortBy: this.sort.currentSort.type } : {}),
+                                    ...(this.sort.currentSort ? { order: this.sort.currentSort.by ? 'asc' : 'desc' } : {}),
+                                },
+                            },
+                            exchangeRate: EXCHANGE_RAGE,
+                            convertToLocaleAmountOnly: this.$helpers.convertToLocaleAmountOnly,
+                        }).finally(() => {
+                            this.loading = false;
+                        });
+
                         return updatedItem;
                     }
                     return item;
@@ -241,7 +257,14 @@ export default {
             if (target.scrollTop + target.clientHeight >= target.scrollHeight - 50) {
                 this.loading = true;
                 this.fetchProducts({
-                    limit: undefined,
+                    query: {
+                        limit: undefined,
+                        // 'https://dummyjson.com/products?sortBy=title&order=asc'
+                        ...{
+                            ...(this.sort.currentSort ? { sortBy: this.sort.currentSort.type } : {}),
+                            ...(this.sort.currentSort ? { order: this.sort.currentSort.by ? 'asc' : 'desc' } : {}),
+                        },
+                    },
                     exchangeRate: EXCHANGE_RAGE,
                     convertToLocaleAmountOnly: this.$helpers.convertToLocaleAmountOnly,
                     isLoadMore: true,
