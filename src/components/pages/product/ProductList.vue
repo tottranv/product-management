@@ -18,9 +18,11 @@
         [&>div]:border [&>div]:rounded [&>div]:p-2">
             <div v-if="settings.filters.showPriceRange">
                 Filter by price:
-                <a-slider :min="10000000" :max="100000000" :step="500000" :tip-formatter="formatCurrency"
-                    v-model="priceRangeFilter" @afterChange="onAfterChange"></a-slider>
-                <p>{{ 'From ' + priceRangeFilter.toLocaleString() }} đ</p>
+                <a-slider range :default-value="priceRangeFilter" :min="100000" :max="10000000" :step="100000"
+                    :tip-formatter="formatCurrency" v-model="priceRangeFilter" @afterChange="onAfterChange"></a-slider>
+                <p>{{ 'From ' + priceRangeFilter[0].toLocaleString() + 'đ to ' + priceRangeFilter[1].toLocaleString() +
+                    'đ' }}
+                </p>
             </div>
         </div>
 
@@ -80,7 +82,7 @@ import { mapGetters, mapActions } from 'vuex';
 export default {
     data() {
         return {
-            priceRangeFilter: 50000000,
+            priceRangeFilter: [1000000, 3000000],
             settings: {
                 filters: {
                     alwaysShowTooltipPriceRange: true,
@@ -116,7 +118,7 @@ export default {
         filterdProducts() {
             let filtered = [...this.products];
             filtered = filtered.filter(item => {
-                return item.price <= this.priceRangeFilter
+                return item.price >= this.priceRangeFilter[0] && item.price <= this.priceRangeFilter[1]
             });
 
             //if sort enabled:
@@ -198,6 +200,8 @@ export default {
         },
         onAfterChange(value) {
             this.priceRangeFilter = value;
+            console.log(value);
+
         },
         removeSort() {
             this.sort.enable = false;
