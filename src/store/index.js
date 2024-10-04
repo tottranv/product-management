@@ -38,8 +38,8 @@ export default new Vuex.Store({
         addProduct(state, product) {
             state.products.push(product);
         },
-        updateProduct(state, {i, product}) {
-            state.products.splice(i, 1, product);
+        updateProduct(state, product) {
+            state.viewProduct = product;
         },
         deleteProduct(state, id) {
             state.products.splice(id, 1);
@@ -186,7 +186,7 @@ export default new Vuex.Store({
                 return Promise.reject('Error fetching products:', error);
             }
         },
-        async getProductById({ commit }, {id, exchangeRate = 24600, convertToLocaleAmountOnly}) {
+        async getProductById({ commit }, { id }) {
             try {
                 const response = await fetch(`https://dummyjson.com/products/${id}`);
                 if(!response.ok) {
@@ -194,11 +194,7 @@ export default new Vuex.Store({
                 }
                 const result = await response.json();
                 if(result) {
-                    commit('getProductById', {
-                        ...result, 
-                        name: result.title, 
-                        price: convertToLocaleAmountOnly(exchangeRate, result.price)
-                    });
+                    commit('getProductById', result);
                     return Promise.resolve(result);
                 }
             } catch (error) {
@@ -214,18 +210,22 @@ export default new Vuex.Store({
             commit('addProduct', product);
             return Promise.resolve('Product is added');
         },
-        updateProduct({ commit, state }, product) {
-            //check1
-            const findIndex = state.products.findIndex(item => item.id === product.id);
-            if(findIndex === -1) {
-                return Promise.reject('Product is not exists');
+        async updateProduct({ commit }, product) {
+            /* updating title of product with id */
+            const response = await fetch(`https://dummyjson.com/products/${product.id}`, {
+                method: 'PATCH', /* or PATCH */
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title: product.name
+                })
+            });
+            
+            if(!response.ok) {
+                return Promise.reject(`Update failed! ${response.statusText}`);
             }
-            //check2
-            const isDublicateWithOther = state.products.some(item => item.id!=product.id && item.name === product.name);
-            if(isDublicateWithOther) {
-                return Promise.reject('Has an other Product with this name');
-            }
-            commit('updateProduct', {i: findIndex,  product});
+
+            const productResponse = await response.json();
+            commit('updateProduct', productResponse);
             return Promise.resolve('Product is updated');
         },
         deleteProduct({ commit, state }, id) {

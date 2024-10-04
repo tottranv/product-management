@@ -36,6 +36,7 @@ export default {
         return {
             in_stock: false,
             form: this.$form.createForm(this, { name: 'productEditForm' }),
+            id: this.$route.params.id,
         }
     },
     computed: {
@@ -48,14 +49,14 @@ export default {
         },
         handleSubmit(e) {
             e.preventDefault();
-            this.form.validateFields((err, values) => {
+            this.form.validateFields((err, { name, price, desc }) => {
                 if (!err) {
                     this.updateProduct({
-                        id: this.product.id,
-                        name: values.name,
-                        price: values.price,
-                        desc: values.desc,
-                        in_stock: this.in_stock,
+                        id: this.viewProduct.id,
+                        title: name,
+                        price,
+                        description: desc,
+                        stock: this.in_stock,
                     }).then(() => {
                         this.$message.success('Product updated successfully');
                     }).catch(error => {
@@ -64,24 +65,16 @@ export default {
                 }
             });
         },
-        async getProduct(id) {
-            this.product = await this.getProductById(id);
-        },
     },
-    mounted() {
-        const id = Number(this.$route.params.id);
-        this.getProduct({
-            id,
-            exchangeRate: EXCHANGE_RAGE,
-            convertToLocaleAmountOnly: this.$helpers.convertToLocaleAmountOnly,
-        });
+    created() {
+        this.getProductById({ id: this.id });
     },
     watch: {
         viewProduct: {
             handler(viewProduct) {
                 if (viewProduct) {
                     this.form.getFieldDecorator('name', { initialValue: viewProduct.title });
-                    this.form.getFieldDecorator('price', { initialValue: viewProduct.price });
+                    this.form.getFieldDecorator('price', { initialValue: this.$helpers.convertToLocaleAmountOnly(EXCHANGE_RAGE, viewProduct.price).toLocaleString() });
                     this.form.getFieldDecorator('desc', { initialValue: viewProduct.description });
                     this.in_stock = viewProduct.stock > 0;
                 }
