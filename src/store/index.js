@@ -155,8 +155,9 @@ export default new Vuex.Store({
                 return Promise.reject('Error login:', 'message' in error ? error.message : error);
             }
         },
-        async fetchProducts({ commit }, {limit = 10, exchangeRate = 24600, convertToLocaleAmountOnly, isLoadMore = false}) {
-            const url = `https://dummyjson.com/products?limit=${limit}&select=id,title,price,description,stock,images,thumbnail`;
+        async fetchProducts({ commit, state }, {limit = 10, exchangeRate = 24600, convertToLocaleAmountOnly, isLoadMore = false}) {
+            const skip = isLoadMore ? state.products.length - 1 : 0;
+            const url = `https://dummyjson.com/products?limit=${limit}&skip=${skip}&select=id,title,price,description,stock,images,thumbnail`;
             try {
                 const response = await fetch(url);
                 if(!response.ok) {

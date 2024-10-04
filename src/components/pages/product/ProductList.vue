@@ -145,9 +145,19 @@ export default {
             };
         },
     },
+    created() {
+        this.loading = true;
+        this.fetchProducts({
+            limit: undefined,
+            exchangeRate: EXCHANGE_RAGE,
+            convertToLocaleAmountOnly: this.$helpers.convertToLocaleAmountOnly,
+        }).finally(() => {
+            this.loading = false;
+        });
+    },
     mounted() {
         this.$nextTick(() => {
-            this.list = this.$refs.productList.$el.querySelector('ul');
+            this.list = this.$refs.productList.$el.querySelector('ul.ant-list-items');
             if (this.list) {
                 this.list.classList.add('max-h-[300px]', 'overflow-auto');
                 const debounced = this.$helpers.debounce(this.onScroll, 1000);
@@ -226,3 +236,8 @@ export default {
     },
 };
 </script>
+<!-- <style scoped>
+v-deep .ant-list-items {
+    @apply max-h-[300px] overflow-auto;
+}
+</style> -->
