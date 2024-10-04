@@ -194,7 +194,7 @@ export default {
         },
         handleDelete(id) {
             this.$confirm({
-                content: 'Are you sure delete this product item?',
+                content: `Are you sure delete this product item ${id}?`,
                 onOk: () => {
                     this.deleteProduct(id).then(() => {
                         this.$message.success('Product deleted successfully');

@@ -42,7 +42,8 @@ export default new Vuex.Store({
             state.viewProduct = product;
         },
         deleteProduct(state, id) {
-            state.products.splice(id, 1);
+            const idx = state.products.findIndex(item => item.id === id);
+            state.products.splice(idx, 1);
         },
     },
     actions: {
@@ -228,12 +229,16 @@ export default new Vuex.Store({
             commit('updateProduct', productResponse);
             return Promise.resolve('Product is updated');
         },
-        deleteProduct({ commit, state }, id) {
-            //check1
-            const findIndex = state.products.findIndex(item => item.id === id);
-            if(findIndex === -1) {
-                return Promise.reject('Product is not exists');
+        async deleteProduct({ commit }, id) {
+            /* delete product with id */
+            const response = await fetch(`https://dummyjson.com/products/${id}`, {
+                method: 'DELETE',
+            });
+            
+            if(!response.ok) {
+                return Promise.reject(`Delete failed! ${response.statusText}`);
             }
+
             commit('deleteProduct', id);
             return Promise.resolve('Product is deleted');
         },
