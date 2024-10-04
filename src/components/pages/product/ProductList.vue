@@ -200,8 +200,6 @@ export default {
         },
         onAfterChange(value) {
             this.priceRangeFilter = value;
-            console.log(value);
-
         },
         removeSort() {
             this.sort.enable = false;
