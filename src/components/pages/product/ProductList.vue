@@ -161,17 +161,13 @@ export default {
             convertToLocaleAmountOnly: this.$helpers.convertToLocaleAmountOnly,
         }).finally(() => {
             this.loading = false;
+            this.setStyle();
         });
     },
     mounted() {
-        this.$nextTick(() => {
-            this.list = this.$refs.productList.$el.querySelector('ul.ant-list-items');
-            if (this.list) {
-                this.list.classList.add('max-h-[300px]', 'overflow-auto');
-                const debounced = this.$helpers.debounce(this.onScroll, 1000);
-                this.list.addEventListener('scroll', debounced);
-            }
-        })
+        // this.$nextTick(() => {
+        //     this.setStyle();
+        // })
     },
     destroyed() {
         if (this.list) {
@@ -217,6 +213,7 @@ export default {
                 convertToLocaleAmountOnly: this.$helpers.convertToLocaleAmountOnly,
             }).finally(() => {
                 this.loading = false;
+                this.setStyle();
             });
         },
         setSort(name) {
@@ -239,6 +236,7 @@ export default {
                             convertToLocaleAmountOnly: this.$helpers.convertToLocaleAmountOnly,
                         }).finally(() => {
                             this.loading = false;
+                            this.setStyle();
                         });
 
                         return updatedItem;
@@ -254,7 +252,7 @@ export default {
         onScroll(event) {
             const target = event.target;
             // check scroll end list:
-            if (target.scrollTop + target.clientHeight >= target.scrollHeight - 50) {
+            if (!this.loading && target.scrollTop + target.clientHeight >= target.scrollHeight - 50) {
                 this.loading = true;
                 this.fetchProducts({
                     query: {
@@ -270,6 +268,7 @@ export default {
                     isLoadMore: true,
                 }).finally(() => {
                     this.loading = false;
+                    this.setStyle();
                 });
             }
         },
@@ -284,12 +283,20 @@ export default {
                 };
             }
             localStorage.setItem('settings', JSON.stringify(this.settings));
-        }
+        },
+        setStyle() {
+            this.list = this.$refs.productList.$el.querySelector('ul.ant-list-items');
+            if (this.list) {
+                this.list.classList.add('max-h-[300px]', 'overflow-auto');
+                const debounced = this.$helpers.debounce(this.onScroll, 1000);
+                this.list.addEventListener('scroll', debounced);
+            }
+        },
     },
 };
 </script>
-<style scoped>
+<!-- <style>
 v-deep .ant-list-items {
     @apply max-h-[300px] overflow-auto;
 }
-</style>
+</style> -->
