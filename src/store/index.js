@@ -211,13 +211,13 @@ export default new Vuex.Store({
             commit('addProduct', product);
             return Promise.resolve('Product is added');
         },
-        async updateProduct({ commit }, product) {
+        async updateProduct({ commit }, { title }) {
             /* updating title of product with id */
             const response = await fetch(`https://dummyjson.com/products/${product.id}`, {
                 method: 'PATCH', /* or PATCH */
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    title: product.name
+                    title,
                 })
             });
             
