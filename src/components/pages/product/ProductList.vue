@@ -288,8 +288,8 @@ export default {
     },
 };
 </script>
-<!-- <style scoped>
+<style scoped>
 v-deep .ant-list-items {
     @apply max-h-[300px] overflow-auto;
 }
-</style> -->
+</style>
