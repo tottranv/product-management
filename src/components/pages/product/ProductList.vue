@@ -1,99 +1,114 @@
 <template>
     <div>
-        <a-button @click="go('/product/add')" class="flex items-center mb-2"><a-icon theme="outlined"
-                type="plus" /><span>Add</span></a-button>
+        <template v-if="!settings">
+            <a-skeleton avatar :paragraph="{ rows: 4 }" />
+        </template>
+        <template v-else>
+            <a-button @click="go('/product/add')" class="flex items-center mb-2"><a-icon theme="outlined"
+                    type="plus" /><span>Add</span></a-button>
 
-        <!-- settings -->
-        <div class="grid grid-cols-4 gap-1 rounded border shadow p-2 mb-2
+            <!-- settings -->
+            <div class="grid grid-cols-4 gap-1 rounded border shadow p-2 mb-2
         [&>div]:border [&>div]:rounded [&>div]:p-2">
-            <label name="show-price">
-                Show filter:
-                <a-switch @click="!settings.filters.showPriceRange" size="small"
-                    v-model="settings.filters.showPriceRange"></a-switch>
-            </label>
-        </div>
-
-        <!-- filters /  sort -->
-        <div v-if="settings.filters.showPriceRange || settings.sort.showSort" class="grid grid-cols-2 gap-4 rounded border shadow p-2 mb-2
-        [&>div]:border [&>div]:rounded [&>div]:p-2">
-            <div v-if="settings.filters.showPriceRange">
-                Filter by price:
-                <a-slider range :default-value="priceRangeFilter" :min="100000" :max="10000000" :step="100000"
-                    :tip-formatter="formatCurrency" v-model="priceRangeFilter" @afterChange="onAfterChange"></a-slider>
-                <p>{{ 'From ' + priceRangeFilter[0].toLocaleString() + 'đ to ' + priceRangeFilter[1].toLocaleString() +
-                    'đ' }}
-                </p>
-            </div>
-        </div>
-
-        <!-- new UI product list -->
-        <a-list ref="productList" size="small" :data-source="filterdProducts" class="border rounded my-2 p-3"
-            :loading="loading">
-            <!-- header zone -->
-            <div slot="header" class="border p-3 hover:bg-gray-100 flex items-center justify-between"
-                :class="sort.type === ' name' && '[>span]:font-bold'">
-                <span class=" flex items-center gap-1 cursor-pointer">
-                    <span @click="setSort('name')"
-                        class="flex items-center justify-between hover:opacity-75 hover:underline">
-                        <a-icon
-                            :type="`arrow-${sort.currentSort && sort.currentSort.type === 'name' && sort.currentSort.by ? 'up' : 'down'}`"
-                            v-show="sort.enable && sort.currentSort.type === 'name'"></a-icon>
-                        Product's info
-                    </span>
-                    <a-icon v-if="sort.currentSort && sort.currentSort.type === 'name'" type="close"
-                        v-show="sort.enable" @click="removeSort"></a-icon>
-                </span>
-
-                <span class="flex items-center gap-1 cursor-pointer">
-                    <span @click="setSort('price')"
-                        class="flex items-center justify-between hover:opacity-75 hover:underline">
-                        <a-icon
-                            :type="`arrow-${sort.currentSort && sort.currentSort.type === 'price' && sort.currentSort.by ? 'up' : 'down'}`"
-                            v-show="sort.enable && sort.currentSort.type === 'price'"></a-icon>
-                        Price
-                    </span>
-                    <a-icon v-if="sort.currentSort && sort.currentSort.type === 'price'" type="close"
-                        v-show="sort.enable" @click="removeSort"></a-icon>
-                </span>
-
-                <span>Action</span>
+                <label name="show-price">
+                    Show filter:
+                    <a-switch @click="!settings.filters.showPriceRange" size="small"
+                        v-model="settings.filters.showPriceRange"
+                        @change="onChangeSettings('filters', { showPriceRange: !settings.filters.showPriceRange })"></a-switch>
+                </label>
             </div>
 
-            <!-- item zone -->
-            <a-list-item slot="renderItem" slot-scope="item" class="hover:border-green-500 hover:bg-gray-100 p-2">
-                <a-button slot="actions" @click="go(`/product/edit/${item.id}`)" class="flex items-center"><a-icon
-                        theme="outlined" type="edit" /></a-button>
-                <a-button slot="actions" @click="handleDelete(item.id)" type="danger" class="flex items-center"><a-icon
-                        type="delete" /></a-button>
+            <!-- filters /  sort -->
+            <div v-if="settings.filters.showPriceRange" class="grid grid-cols-2 gap-4 rounded border shadow p-2 mb-2
+        [&>div]:border [&>div]:rounded [&>div]:p-2">
+                <div v-if="settings.filters.showPriceRange">
+                    Filter by price:
+                    <a-slider range :default-value="priceRangeFilter" :min="100000" :max="10000000" :step="100000"
+                        :tip-formatter="formatCurrency" v-model="priceRangeFilter"
+                        @afterChange="onAfterChange"></a-slider>
+                    <p>{{ 'From ' + priceRangeFilter[0].toLocaleString() + 'đ to ' +
+                        priceRangeFilter[1].toLocaleString() +
+                        'đ' }}
+                    </p>
+                </div>
+            </div>
+        </template>
 
-                <a-list-item-meta :description="item.desc">
-                    <a slot="title">{{ item.name }}</a>
-                    <a-avatar slot="avatar" :src="item.thumbnail"></a-avatar>
-                </a-list-item-meta>
-                <div class="text-green-500 font-bold">{{ item.price.toLocaleString() }}đ</div>
-            </a-list-item>
-        </a-list>
+        <template v-if="!filterdProducts">
+            <a-skeleton avatar :paragraph="{ rows: 4 }" />
+        </template>
+        <template v-else>
+            <!-- new UI product list -->
+            <a-list ref="productList" size="small" :data-source="filterdProducts" class="border rounded my-2 p-3"
+                :loading="loading">
+                <!-- header zone -->
+                <div slot="header" class="border p-3 hover:bg-gray-100 flex items-center justify-between"
+                    :class="sort.type === ' name' && '[>span]:font-bold'">
+                    <span class=" flex items-center gap-1 cursor-pointer">
+                        <span @click="setSort('name')"
+                            class="flex items-center justify-between hover:opacity-75 hover:underline">
+                            <a-icon
+                                :type="`arrow-${sort.currentSort && sort.currentSort.type === 'name' && sort.currentSort.by ? 'up' : 'down'}`"
+                                v-show="sort.enable && sort.currentSort.type === 'name'"></a-icon>
+                            Product's info
+                        </span>
+                        <a-icon v-if="sort.currentSort && sort.currentSort.type === 'name'" type="close"
+                            v-show="sort.enable" @click="removeSort"></a-icon>
+                    </span>
+
+                    <span class="flex items-center gap-1 cursor-pointer">
+                        <span @click="setSort('price')"
+                            class="flex items-center justify-between hover:opacity-75 hover:underline">
+                            <a-icon
+                                :type="`arrow-${sort.currentSort && sort.currentSort.type === 'price' && sort.currentSort.by ? 'up' : 'down'}`"
+                                v-show="sort.enable && sort.currentSort.type === 'price'"></a-icon>
+                            Price
+                        </span>
+                        <a-icon v-if="sort.currentSort && sort.currentSort.type === 'price'" type="close"
+                            v-show="sort.enable" @click="removeSort"></a-icon>
+                    </span>
+
+                    <span>Action</span>
+                </div>
+
+                <!-- item zone -->
+                <a-list-item slot="renderItem" slot-scope="item" class="hover:border-green-500 hover:bg-gray-100 p-2">
+                    <a-button slot="actions" @click="go(`/product/edit/${item.id}`)" class="flex items-center"><a-icon
+                            theme="outlined" type="edit" /></a-button>
+                    <a-button slot="actions" @click="handleDelete(item.id)" type="danger"
+                        class="flex items-center"><a-icon type="delete" /></a-button>
+
+                    <a-list-item-meta :description="item.desc">
+                        <a slot="title">{{ item.name }}</a>
+                        <a-avatar slot="avatar" :src="item.thumbnail"></a-avatar>
+                    </a-list-item-meta>
+                    <div class="text-green-500 font-bold">{{ item.price.toLocaleString() }}đ</div>
+                </a-list-item>
+            </a-list>
+        </template>
     </div>
 </template>
 <script>
 import { EXCHANGE_RAGE } from '@/helpers';
 import { mapGetters, mapActions } from 'vuex';
 
+const getSettingsLocal = () => (localStorage.getItem('settings') ? JSON.parse(localStorage.getItem('settings')) : {
+    filters: {
+        alwaysShowTooltipPriceRange: true,
+        showPriceRange: true,
+    },
+    view: {
+        layout: {
+            horizontal: true,
+        },
+    },
+});
+
 export default {
     data() {
         return {
             priceRangeFilter: [1000000, 3000000],
-            settings: {
-                filters: {
-                    alwaysShowTooltipPriceRange: true,
-                    showPriceRange: true,
-                },
-                view: {
-                    layout: {
-                        horizontal: true,
-                    },
-                },
-            },
+            settings: getSettingsLocal(),
             //fields for product data:
             loading: false,
             loadingMore: false,
@@ -235,6 +250,18 @@ export default {
                 });
             }
         },
+        onChangeSettings(parentKey, updateField) {
+            if (parentKey in updateField) {
+                this.settings = {
+                    ...this.settings,
+                    filters: {
+                        ...this.settings.filters,
+                        ...updateField.filters,
+                    }
+                };
+            }
+            localStorage.setItem('settings', JSON.stringify(this.settings));
+        }
     },
 };
 </script>
