@@ -32,6 +32,9 @@ export default new Vuex.Store({
         loadMoreProducts(state, moreProducts) {
             state.products = state.products.concat(moreProducts);
         },
+        getProductById(state, product) {
+            state.viewProduct = product;
+        },
         addProduct(state, product) {
             state.products.push(product);
         },
@@ -183,8 +186,32 @@ export default new Vuex.Store({
                 return Promise.reject('Error fetching products:', error);
             }
         },
-        getProductById({ state }, id) {
-            return state.products.find(product => product.id === id);
+        async getProductById({ commit }, {id, exchangeRate = 24600, convertToLocaleAmountOnly}) {
+            try {
+                const response = await fetch(`https://dummyjson.com/products/${id}`);
+                if(!response.ok) {
+                    return Promise.reject(`Fetch product ${id} failed. ${JSON.stringify(response.statusText)}`);
+                }
+                const result = await response.json();
+                if(result) {
+                    console.log(result.title);
+                    const data = {
+                        ...result, 
+                        name: result.title, 
+                        price: convertToLocaleAmountOnly(exchangeRate, result.price)
+                    };
+                    console.log(data);
+                    
+                    commit('getProductById', {
+                        ...result, 
+                        name: result.title, 
+                        price: convertToLocaleAmountOnly(exchangeRate, result.price)
+                    });
+                    return Promise.resolve(result);
+                }
+            } catch (error) {
+                return Promise.reject(`Fetch product ${id} failed. ${JSON.stringify(error)}`);
+            }
         },
         addProduct({ commit, state }, product) {
             //check1
