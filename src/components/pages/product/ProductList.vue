@@ -34,12 +34,12 @@
             </div>
         </template>
 
-        <template v-if="!filterdProducts">
+        <template v-if="!filteredProducts">
             <a-skeleton avatar :paragraph="{ rows: 4 }" />
         </template>
         <template v-else>
             <!-- new UI product list -->
-            <a-list ref="productList" size="small" :data-source="filterdProducts" class="border rounded my-2 p-3"
+            <a-list ref="productList" size="small" :data-source="filteredProducts" class="border rounded my-2 p-3"
                 :loading="loading">
                 <!-- header zone -->
                 <div slot="header" class="border p-3 hover:bg-gray-100 flex items-center justify-between"
@@ -130,7 +130,7 @@ export default {
     },
     computed: {
         ...mapGetters(['products']),
-        filterdProducts() {
+        filteredProducts() {
             let filtered = [...this.products];
             filtered = filtered.filter(item => {
                 return item.price >= this.priceRangeFilter[0] && item.price <= this.priceRangeFilter[1]
@@ -154,8 +154,8 @@ export default {
             return filtered;
         },
         pagination() {
-            const totalPage = Math.ceil(this.filterdProducts.length / this.pageSize);
-            const totalElements = this.filterdProducts.length;
+            const totalPage = Math.ceil(this.filteredProducts.length / this.pageSize);
+            const totalElements = this.filteredProducts.length;
             return {
                 totalPage,
                 totalElements,
