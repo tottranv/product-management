@@ -83,7 +83,7 @@ export default {
                     this.form.getFieldDecorator('name', { initialValue: viewProduct.title });
                     this.form.getFieldDecorator('price', { initialValue: viewProduct.price });
                     this.form.getFieldDecorator('desc', { initialValue: viewProduct.description });
-                    this.in_stock = viewProduct.stock;
+                    this.in_stock = viewProduct.stock > 0;
                 }
             },
             immediate: true,

@@ -194,14 +194,6 @@ export default new Vuex.Store({
                 }
                 const result = await response.json();
                 if(result) {
-                    console.log(result.title);
-                    const data = {
-                        ...result, 
-                        name: result.title, 
-                        price: convertToLocaleAmountOnly(exchangeRate, result.price)
-                    };
-                    console.log(data);
-                    
                     commit('getProductById', {
                         ...result, 
                         name: result.title, 
