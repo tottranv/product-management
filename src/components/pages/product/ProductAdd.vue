@@ -17,7 +17,7 @@
                     v-decorator="['desc', { rules: [{ required: true, message: 'Please input desc' }] }]"></a-textarea>
             </a-form-item>
             <a-form-item label="In Stock">
-                <a-checkbox v-model="in_stock" :checked="true" @click="!in_stock"></a-checkbox>
+                <a-checkbox v-model="stock" :checked="true" @click="!stock"></a-checkbox>
             </a-form-item>
             <a-form-item>
                 <a-button html-type="submit">Save</a-button>
@@ -31,7 +31,7 @@ import { mapActions } from 'vuex';
 export default {
     data() {
         return {
-            in_stock: false,
+            stock: false,
             form: this.$form.createForm(this, { name: 'productForm' }),
         }
     },
@@ -45,7 +45,7 @@ export default {
             this.form.validateFields(
                 (err, { name, price, desc }) => {
                     if (!err) {
-                        this.addProduct({ name, price, desc, in_stock: this.in_stock }).then((info) => {
+                        this.addProduct({ title: name, price, desc, stock: this.stock }).then((info) => {
                             this.$message.success(info);
                         }).catch(error => {
                             this.$message.error(error, 10);

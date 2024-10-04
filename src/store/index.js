@@ -202,18 +202,31 @@ export default new Vuex.Store({
                 return Promise.reject(`Fetch product ${id} failed. ${JSON.stringify(error)}`);
             }
         },
-        addProduct({ commit, state }, product) {
-            //check1
-            const productExists = state.products.some(item => item.name === product.name);
-            if(productExists) {
-                return Promise.reject('Product is already exists');
+        async addProduct({ commit }, product) {
+            const response = await fetch('https://dummyjson.com/products/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  ...product,
+                })
+            });
+
+            if(!response.ok) {
+                return Promise.reject(`Add failed! ${response.statusText}`);
             }
-            commit('addProduct', product);
-            return Promise.resolve('Product is added');
+
+            const productResponse = await response.json();
+            if(productResponse) {
+                commit('addProduct', product);
+                return Promise.resolve('Successfully! This product only local added. This product not visible in list because the data loaded from mock server.');
+            } else {
+                return Promise.reject(`Add has some problem. ${JSON.stringify(productResponse)}`);
+            }
+                
         },
-        async updateProduct({ commit }, { title }) {
+        async updateProduct({ commit }, { id, title }) {
             /* updating title of product with id */
-            const response = await fetch(`https://dummyjson.com/products/${product.id}`, {
+            const response = await fetch(`https://dummyjson.com/products/${id}`, {
                 method: 'PATCH', /* or PATCH */
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
