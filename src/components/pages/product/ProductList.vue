@@ -172,8 +172,7 @@ export default {
         }
     },
     created() {
-        this.loading = true;
-        this.fetchProducts({
+        this.onFetchProduct({
             query: {
                 limit: 25,
                 // 'https://dummyjson.com/products?sortBy=title&order=asc'
@@ -184,8 +183,7 @@ export default {
             },
             exchangeRate: EXCHANGE_RAGE,
             convertToLocaleAmountOnly: this.$helpers.convertToLocaleAmountOnly,
-        }).finally(() => {
-            this.loading = false;
+        }, () => {
             this.setStyle();
         });
     },
@@ -230,16 +228,26 @@ export default {
         onAfterChange(value) {
             this.priceRangeFilter = value;
         },
+        async onFetchProduct(options, cb) {
+            try {
+                this.loading = true;
+                await this.fetchProducts(options);
+                this.loading = false;
+            } catch (error) {
+                this.$message.error(error.message);
+                this.loading = false;
+            } finally {
+                typeof cb === 'function' && cb();
+            }
+        },
         removeSort() {
             this.sort.enable = false;
-            this.fetchProducts({
+            this.onFetchProduct({
                 query: {
                     limit: 25,
                 },
                 exchangeRate: EXCHANGE_RAGE,
                 convertToLocaleAmountOnly: this.$helpers.convertToLocaleAmountOnly,
-            }).finally(() => {
-                this.loading = false;
             });
         },
         setSort(name) {
@@ -249,7 +257,7 @@ export default {
                         const updatedItem = { ...item, selected: true, by: !item.by };
                         this.sort.currentSort = updatedItem;
 
-                        this.fetchProducts({
+                        this.onFetchProduct({
                             query: {
                                 limit: 25,
                                 // 'https://dummyjson.com/products?sortBy=title&order=asc'
@@ -260,8 +268,6 @@ export default {
                             },
                             exchangeRate: EXCHANGE_RAGE,
                             convertToLocaleAmountOnly: this.$helpers.convertToLocaleAmountOnly,
-                        }).finally(() => {
-                            this.loading = false;
                         });
 
                         return updatedItem;
@@ -274,12 +280,11 @@ export default {
         onPageSizeAfterChange(value) {
             this.pageSize = value;
         },
-        onScroll(event) {
+        async onScroll(event) {
             const target = event.target;
             // check scroll end list:
             if (!this.loading && target.scrollTop + target.clientHeight >= target.scrollHeight - 200) {
-                this.loading = true;
-                this.fetchProducts({
+                this.onFetchProduct({
                     query: {
                         limit: 25,
                         // 'https://dummyjson.com/products?sortBy=title&order=asc'
@@ -291,8 +296,6 @@ export default {
                     exchangeRate: EXCHANGE_RAGE,
                     convertToLocaleAmountOnly: this.$helpers.convertToLocaleAmountOnly,
                     isLoadMore: true,
-                }).finally(() => {
-                    this.loading = false;
                 });
             }
         },

@@ -54,7 +54,7 @@ export default new Vuex.Store({
                 // ACCESS TOKEN TO GET API ME: prepare accessToken
                 const accessToken = localStorage.getItem('accessToken');
                 if(!accessToken) {
-                    throw new Error('Do not have access token. Please login.');//push /auth/login
+                    throw new Error('Do not have access token. Please login.');
                 }
 
                 // GET: fetch me by accessToken
@@ -71,7 +71,7 @@ export default new Vuex.Store({
                     // IF ACCESS TOKEN EXPIRED: prepare refreshToken
                     const refreshToken = localStorage.getItem('refreshToken');
                     if(!refreshToken) {
-                        throw new Error('Prepare refresh token has been failed.');//push /auth/login
+                        throw new Error('Prepare refresh token has been failed.');
                     }
 
                     // re get accessToken by refreshToken:
@@ -88,14 +88,14 @@ export default new Vuex.Store({
                     // re get accessToken error:
                     if(!refreshResponse.ok) {
                         errorMessage = await refreshResponse.json();
-                        throw new Error('Fail refresh accessToken. Cause ' + errorMessage.message);//push /auth/login
+                        throw new Error('Fail refresh accessToken. Cause ' + errorMessage.message);
                     }
 
                     // if ok:
                     const refetchTokenData = await refreshResponse.json();//re get tokens
                     // check tokens:
                     if(!refetchTokenData && !('accessToken' in refetchTokenData) && !('refreshToken' in refetchTokenData)) {
-                        throw new Error('The tokens refreshed was unvalid.');//push /auth/login
+                        throw new Error('The tokens refreshed was unvalid.');
                     }
 
                     // save tokens:
@@ -108,13 +108,13 @@ export default new Vuex.Store({
                     // get me failed:
                     if(!getMeAgainResponse.ok) {
                         errorMessage = await getMeAgainResponse.json();
-                        throw new Error('Fail get me again. Cause ' + errorMessage.message);//push /auth/login
+                        throw new Error('Fail get me again. Cause ' + errorMessage.message);
                     }
 
                     // if re get me ok:
                     const getMeAgainJsonData = await getMeAgainResponse.json();
                     if(!('username' in getMeAgainJsonData)) {
-                        throw new Error('Getted user data is unvalid');//push /auth/login
+                        throw new Error('Getted user data is unvalid');
                     }
 
                     commit('me', getMeAgainJsonData);
@@ -159,11 +159,15 @@ export default new Vuex.Store({
         },
         async fetchProducts({ commit, state }, {query: { limit = 10, sortBy, order }, exchangeRate = 24600, convertToLocaleAmountOnly, isLoadMore = false}) {
             const skip = isLoadMore ? state.products.length - 1 : 0;
-            const url = `https://dummyjson.com/products?limit=${limit}&skip=${skip}${sortBy ? `&sortBy=${sortBy}` : ''}${order ? `&order=${order}` : ''}&select=id,title,price,description,stock,images,thumbnail`;
+            const url = `https://dummyjson.com/products?limit=${limit}&skip=${skip}${
+                sortBy ? `&sortBy=${sortBy}` : ''}${
+                order ? `&order=${order}` : ''
+            }&select=id,title,price,description,stock,images,thumbnail`;
             try {
                 const response = await fetch(url);
                 if(!response.ok) {
-                    return Promise.reject(`HTTP error! status: ${response.status}`);
+                    const errorMessage = await response.json();
+                    throw new Error(errorMessage.message);
                 }
                 const { products } = await response.json();
                 if(products && Array.isArray(products)) {
@@ -176,12 +180,12 @@ export default new Vuex.Store({
                         in_stock: stock,
                     }));
                     commit(isLoadMore ? 'loadMoreProducts' : 'initialProducts', convertProducts);
-                    return Promise.resolve('Success to fetch product.');
+                    return 'Success to fetch product.';
                 } else {
-                    return Promise.reject('Invalid data format:', products);
+                    throw new Error('Invalid data format ' + JSON.stringify(products));
                 }
             } catch (error) {
-                return Promise.reject('Error fetching products:', error);
+                throw new Error(error.message);
             }
         },
         async getProductById({ commit }, { id }) {
