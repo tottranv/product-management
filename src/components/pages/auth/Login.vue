@@ -67,12 +67,12 @@ export default {
                     try {
                         this.login({ username, password }).then(() => {
                             this.$router.push('/product/list');
-                            this.$message.success(err);
+                            this.$message.success('Login successfully!');
                         }).catch(err => {
                             this.$message.error(err);
                         })
                     } catch (error) {
-                        this.$message.error(`Login fail you to some problems: ${error}`);
+                        this.$message.error(`Login has failed. Cause ${error}`);
                     }
                 }
             });
