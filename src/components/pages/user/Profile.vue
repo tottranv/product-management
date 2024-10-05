@@ -37,12 +37,9 @@ export default {
     methods: {
         ...mapActions(['me', 'setBreadcrumb']),
         fetchMe() {
-            this.me()
-                .then((result) => {
-                    this.$message.success(result);
-                }).catch(error => {
-                    this.$message.error(error);
-                });
+            this.me().catch(error => {
+                this.$message.error(error);
+            });
         }
     },
 }
