@@ -53,13 +53,16 @@ export default {
         handleSubmit(e) {
             e.preventDefault();
             this.form.validateFields(
-                (err, { name, price, desc }) => {
-                    if (!err) {
-                        this.addProduct({ title: name, price, desc, stock: this.stock }).then((info) => {
-                            this.$message.success(info);
-                        }).catch(error => {
-                            this.$message.error(error, 10);
-                        });
+                async (err, { name, price, desc }) => {
+                    if (err) {
+                        this.$message.error('Form input invalid!');
+                    } else {
+                        try {
+                            const result = await this.addProduct({ title: name, price, desc, stock: this.stock });
+                            this.$message.success(result);
+                        } catch (error) {
+                            this.$message.error(error.message);
+                        }
                     }
                 }
             );

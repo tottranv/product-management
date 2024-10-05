@@ -205,26 +205,30 @@ export default new Vuex.Store({
             }
         },
         async addProduct({ commit }, product) {
-            const response = await fetch('https://dummyjson.com/products/add', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  ...product,
-                })
-            });
+            try {
+                const response = await fetch('https://dummyjson.com/products/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      ...product,
+                    })
+                });
+    
+                const jsonResponse = await response.json();
 
-            if(!response.ok) {
-                return Promise.reject(`Add failed! ${response.statusText}`);
-            }
-
-            const productResponse = await response.json();
-            if(productResponse) {
-                commit('addProduct', product);
-                return Promise.resolve('Successfully! This product only local added. This product not visible in list because the data loaded from mock server.');
-            } else {
-                return Promise.reject(`Add has some problem. ${JSON.stringify(productResponse)}`);
-            }
-                
+                if(!response.ok) {
+                    throw new Error(`Add failed! ${jsonResponse.message}`);
+                }
+    
+                if(jsonResponse) {
+                    commit('addProduct', jsonResponse);
+                    return 'Mock server response successfully add api.';
+                } else {
+                    throw new Error(JSON.stringify(jsonResponse));
+                }
+            } catch (error) {
+                throw new Error(error.message);
+            }    
         },
         async updateProduct({ commit }, { id, title }) {
             /* updating title of product with id */
