@@ -69,19 +69,23 @@ export default {
         },
         handleSubmit(e) {
             e.preventDefault();
-            this.form.validateFields((err, { name, price, desc }) => {
-                if (!err) {
-                    this.updateProduct({
-                        id: this.viewProduct.id,
-                        title: name,
-                        price,
-                        description: desc,
-                        stock: this.in_stock,
-                    }).then(() => {
-                        this.$message.success('Product updated successfully');
-                    }).catch(error => {
-                        this.$message.error(error);
-                    });
+            this.form.validateFields(async (err, { name, price, desc }) => {
+                if (err) {
+                    this.$message.error('Form input invalid!');
+                } else {
+                    try {
+                        const result = await this.updateProduct({
+                            id: this.viewProduct.id,
+                            title: name,
+                            price,
+                            description: desc,
+                            stock: this.in_stock,
+                        });
+                        this.$message.success(result);
+                        this.$router.push({ name: 'productList' });
+                    } catch (error) {
+                        this.$message.error(error.message);
+                    }
                 }
             });
         },

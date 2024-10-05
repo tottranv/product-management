@@ -18,17 +18,17 @@ const router = new Router({
       path: '/auth',
       component: AuthLayout,
       children: [
-        { path: 'login', component: Login },
+        { path: 'login', component: Login, name: 'login' },
       ],
     },
     {
       path: '/',
       component: MainLayout,
       children: [
-        { path: '', component: ProductList, meta: { requiresAuth: true } },
-        { path: '/product/add', component: ProductAdd, meta: { requiresAuth: true } },
-        { path: '/product/edit/:id', component: ProductEdit, meta: { requiresAuth: true } },
-        { path: '/profile', component: Profile, meta: { requiresAuth: true } },
+        { path: '', component: ProductList, meta: { requiresAuth: true }, name: 'productList' },
+        { path: '/product/add', component: ProductAdd, meta: { requiresAuth: true }, name: 'productAdd' },
+        { path: '/product/edit/:id', component: ProductEdit, meta: { requiresAuth: true }, name: 'productEdit' },
+        { path: '/profile', component: Profile, meta: { requiresAuth: true }, name: 'profile' },
       ],
     },
     { path: '*', redirect: '/' },

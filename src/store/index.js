@@ -222,7 +222,7 @@ export default new Vuex.Store({
     
                 if(jsonResponse) {
                     commit('addProduct', jsonResponse);
-                    return 'Mock server response successfully add api.';
+                    return 'Successfully add product(test in response)';
                 } else {
                     throw new Error(JSON.stringify(jsonResponse));
                 }
@@ -231,22 +231,24 @@ export default new Vuex.Store({
             }    
         },
         async updateProduct({ commit }, { id, title }) {
-            /* updating title of product with id */
-            const response = await fetch(`https://dummyjson.com/products/${id}`, {
-                method: 'PATCH', /* or PATCH */
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    title,
-                })
-            });
-            
-            if(!response.ok) {
-                return Promise.reject(`Update failed! ${response.statusText}`);
+            try {
+                const response = await fetch(`https://dummyjson.com/products/${id}`, {
+                    method: 'PATCH', /* or PATCH */
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title,
+                    })
+                });
+                
+                const productJsonResponse = await response.json();
+                if(!response.ok) {
+                    throw new Error(`Update failed! ${productJsonResponse.message}`);
+                }
+                commit('updateProduct', productJsonResponse);
+                return 'Product is updated';
+            } catch (error) {
+                throw new Error(error.message);
             }
-
-            const productResponse = await response.json();
-            commit('updateProduct', productResponse);
-            return Promise.resolve('Product is updated');
         },
         async deleteProduct({ commit }, id) {
             /* delete product with id */

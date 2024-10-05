@@ -60,6 +60,7 @@ export default {
                         try {
                             const result = await this.addProduct({ title: name, price, desc, stock: this.stock });
                             this.$message.success(result);
+                            this.$router.push({ name: 'productList' });
                         } catch (error) {
                             this.$message.error(error.message);
                         }
