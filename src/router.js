@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
+import { showCountdownMessage } from './helpers';
 const ProductList = () => import('./components/pages/product/ProductList.vue');
 const ProductAdd = () => import('./components/pages/product/ProductAdd.vue');
 const Login = () => import('./components/pages/auth/Login.vue');
@@ -43,7 +44,9 @@ router.beforeEach((to, from, next) => {
   try {
     if(to.matched.some(record => record.meta.requiresAuth)) {
       if(!isAuthenticated()) {
-        next({ path: '/auth/login' });//unAuthenticated!
+        showCountdownMessage(3, () => {
+          next({ path: '/auth/login' });//unAuthenticated!
+        });
       } else {
         next();//accepted!
       }
