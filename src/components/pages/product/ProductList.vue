@@ -31,6 +31,13 @@
                         'đ' }}
                     </p>
                 </div>
+                <div>
+                    Instock
+                    <label name="show-price">
+                        <a-switch @click="!settings.filters.inStock" size="small" v-model="settings.filters.inStock"
+                            @change="onChangeSettings('filters', { inStock: settings.filters.inStock === undefined ? true : !settings.filters.inStock })"></a-switch>
+                    </label>
+                </div>
             </div>
         </template>
 
@@ -96,6 +103,7 @@ const getSettingsLocal = () => (localStorage.getItem('settings') ? JSON.parse(lo
     filters: {
         alwaysShowTooltipPriceRange: true,
         showPriceRange: true,
+        inStock: undefined,
     },
     view: {
         layout: {
@@ -107,7 +115,7 @@ const getSettingsLocal = () => (localStorage.getItem('settings') ? JSON.parse(lo
 export default {
     data() {
         return {
-            priceRangeFilter: [1000000, 3000000],
+            priceRangeFilter: [100000, 10000000],
             settings: getSettingsLocal(),
             //fields for product data:
             loading: false,
@@ -132,9 +140,17 @@ export default {
         ...mapGetters(['products']),
         filteredProducts() {
             let filtered = [...this.products];
-            filtered = filtered.filter(item => {
-                return item.price >= this.priceRangeFilter[0] && item.price <= this.priceRangeFilter[1]
-            });
+
+            if (this.settings.filters.showPriceRange) {
+                filtered = filtered.filter(item => item.price >= this.priceRangeFilter[0] && item.price <= this.priceRangeFilter[1]);
+            }
+
+            if (this.settings.filters.inStock !== undefined) {
+                filtered = filtered.filter(item => {
+                    return (item.in_stock > 0) === this.settings.filters.inStock
+                });
+            }
+
             return filtered;
         },
         pagination() {
@@ -146,11 +162,20 @@ export default {
             };
         },
     },
+    watch: {
+        filteredProducts(newVal, oldVal) {
+            if (newVal.length !== oldVal.length) {
+                this.$nextTick(() => {
+                    this.setStyle();
+                })
+            }
+        }
+    },
     created() {
         this.loading = true;
         this.fetchProducts({
             query: {
-                limit: undefined,
+                limit: 25,
                 // 'https://dummyjson.com/products?sortBy=title&order=asc'
                 ...{
                     ...(this.sort.currentSort ? { sortBy: this.sort.currentSort.type } : {}),
@@ -209,13 +234,12 @@ export default {
             this.sort.enable = false;
             this.fetchProducts({
                 query: {
-                    limit: undefined,
+                    limit: 25,
                 },
                 exchangeRate: EXCHANGE_RAGE,
                 convertToLocaleAmountOnly: this.$helpers.convertToLocaleAmountOnly,
             }).finally(() => {
                 this.loading = false;
-                this.setStyle();
             });
         },
         setSort(name) {
@@ -227,7 +251,7 @@ export default {
 
                         this.fetchProducts({
                             query: {
-                                limit: undefined,
+                                limit: 25,
                                 // 'https://dummyjson.com/products?sortBy=title&order=asc'
                                 ...{
                                     ...(this.sort.currentSort ? { sortBy: this.sort.currentSort.type } : {}),
@@ -238,7 +262,6 @@ export default {
                             convertToLocaleAmountOnly: this.$helpers.convertToLocaleAmountOnly,
                         }).finally(() => {
                             this.loading = false;
-                            this.setStyle();
                         });
 
                         return updatedItem;
@@ -254,11 +277,11 @@ export default {
         onScroll(event) {
             const target = event.target;
             // check scroll end list:
-            if (!this.loading && target.scrollTop + target.clientHeight >= target.scrollHeight - 50) {
+            if (!this.loading && target.scrollTop + target.clientHeight >= target.scrollHeight - 200) {
                 this.loading = true;
                 this.fetchProducts({
                     query: {
-                        limit: undefined,
+                        limit: 25,
                         // 'https://dummyjson.com/products?sortBy=title&order=asc'
                         ...{
                             ...(this.sort.currentSort ? { sortBy: this.sort.currentSort.type } : {}),
@@ -270,7 +293,6 @@ export default {
                     isLoadMore: true,
                 }).finally(() => {
                     this.loading = false;
-                    this.setStyle();
                 });
             }
         },
@@ -290,7 +312,7 @@ export default {
             this.list = this.$refs.productList.$el.querySelector('ul.ant-list-items');
             if (this.list) {
                 this.list.classList.add('max-h-[300px]', 'overflow-auto');
-                const debounced = this.$helpers.debounce(this.onScroll, 1000);
+                const debounced = this.$helpers.debounce(this.onScroll, 250);
                 this.list.addEventListener('scroll', debounced);
             }
         },
