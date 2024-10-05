@@ -10,7 +10,7 @@
                 <a-icon key="edit" type="edit" />
                 <a-icon key="ellipsis" type="ellipsis" />
             </template>
-            <a-card-meta :title="user.firstName + ' ' + user.lastName" :description="user.company.name">
+            <a-card-meta :title="user.firstName + ' ' + user.lastName" :description="user.company && user.company.name">
                 <a-avatar slot="avatar" :src="user.image" />
             </a-card-meta>
         </template>
@@ -36,10 +36,15 @@ export default {
     },
     methods: {
         ...mapActions(['me', 'setBreadcrumb']),
-        fetchMe() {
-            this.me().catch(error => {
-                this.$message.error(error);
-            });
+        async fetchMe() {
+            try {
+                await this.me();
+            } catch (error) {
+                this.$message.error(error.message);
+                this.$helpers.showCountdownMessage(5, () => {
+                    this.$router.push('/auth/login');
+                });
+            }
         }
     },
 }

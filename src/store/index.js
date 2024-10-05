@@ -49,80 +49,83 @@ export default new Vuex.Store({
     },
     actions: {
         async me({ commit }) {
-            //prepare accessToken
-            const accessToken = localStorage.getItem('accessToken');
-            if (accessToken) {
-                try {
-                    // fetch me by accessToken
-                    const firstGetMeResponse = await fetchMe(accessToken);
-
-                    // accessToken expired:
-                    if(firstGetMeResponse.status === 401){
-                        // prepare refreshToken
-                        const refreshToken = localStorage.getItem('refreshToken');
-                        if(refreshToken) {
-
-                            // re get accessToken by refreshToken:
-                            const refreshResponse = await fetch('https://dummyjson.com/auth/refresh', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                  refreshToken, // Optional, if not provided, the server will use the cookie
-                                  expiresInMins: 60 * 24 * 30, //30 days // optional (FOR ACCESS TOKEN), defaults to 60
-                                }),
-                                // credentials: 'include' // Include cookies (e.g., accessToken) in the request
-                            });
-
-                            // re get accessToken error:
-                            if(!refreshResponse.ok) {
-                                return Promise.reject('Fail re get accessToken.', refreshResponse);
-                            }
-
-                            // if ok:
-                            const refetchTokenData = await refreshResponse.json();//re get tokens
-
-                            // check tokens:
-                            if(refetchTokenData && 'accessToken' in refetchTokenData && 'refreshToken' in refetchTokenData) {
-                                // save tokens:
-                                localStorage.setItem('accessToken', refetchTokenData.accessToken);
-                                localStorage.setItem('refreshToken', refetchTokenData.refreshToken);
-
-                                // re get me:
-                                const secondGetMeResponse = await fetchMe(refetchTokenData.accessToken);
-                                
-                                // get me failed:
-                                if(!secondGetMeResponse.ok) {
-                                    return Promise.reject('Fail get me again', secondGetMeResponse);
-                                }
-
-                                // if re get me ok:
-                                const reGetMeData = await secondGetMeResponse.json();
-                                if('username' in reGetMeData) {
-                                    // console.log('getted user at 2', reGetMeData);
-                                    
-                                    commit('me', reGetMeData);
-                                    return Promise.resolve('Success re get me.');
-                                } else {
-                                    return Promise.reject('User is unvalid');
-                                }
-                            } else {
-                                return Promise.reject('Re get tokens unvalid');
-                            }
-                        } else {
-                            return Promise.reject('Refresh token expired');
-                        }
-                    } else {
-                        const meData = await firstGetMeResponse.json();
-                        // console.log('getted user at 1', meData);
-
-                        commit('me', meData);
-                        return Promise.resolve('Success to get user info');
-                    }
-                } catch (error) {
-                    return Promise.reject('Fail to get user info');
+            try {
+                let errorMessage = '';
+                // ACCESS TOKEN TO GET API ME: prepare accessToken
+                const accessToken = localStorage.getItem('accessToken');
+                if(!accessToken) {
+                    throw new Error('Do not have access token. Please login.');//push /auth/login
                 }
-            } else {
-                return Promise.reject('Dont have access token. Please login.');
+
+                // GET: fetch me by accessToken
+                const firstGetMeResponse = await fetchMe(accessToken);
+
+                // IF OK:
+                if(!firstGetMeResponse.ok) {
+                    // IF FAIL BECAUSE OTHER CASES:
+                    if(firstGetMeResponse.status !== 401) {
+                        errorMessage = await firstGetMeResponse.json();
+                        throw new Error(`Fail token because other case. Cause ${errorMessage.message}`);
+                    }
+
+                    // IF ACCESS TOKEN EXPIRED: prepare refreshToken
+                    const refreshToken = localStorage.getItem('refreshToken');
+                    if(!refreshToken) {
+                        throw new Error('Prepare refresh token has been failed.');//push /auth/login
+                    }
+
+                    // re get accessToken by refreshToken:
+                    const refreshResponse = await fetch('https://dummyjson.com/auth/refresh', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            refreshToken, // Optional, if not provided, the server will use the cookie
+                            expiresInMins: 60 * 24 * 30, //30 days // optional (FOR ACCESS TOKEN), defaults to 60
+                        }),
+                        // credentials: 'include' // Include cookies (e.g., accessToken) in the request
+                    });
+
+                    // re get accessToken error:
+                    if(!refreshResponse.ok) {
+                        errorMessage = await refreshResponse.json();
+                        throw new Error('Fail refresh accessToken. Cause ' + errorMessage.message);//push /auth/login
+                    }
+
+                    // if ok:
+                    const refetchTokenData = await refreshResponse.json();//re get tokens
+                    // check tokens:
+                    if(!refetchTokenData && !('accessToken' in refetchTokenData) && !('refreshToken' in refetchTokenData)) {
+                        throw new Error('The tokens refreshed was unvalid.');//push /auth/login
+                    }
+
+                    // save tokens:
+                    localStorage.setItem('accessToken', refetchTokenData.accessToken);
+                    localStorage.setItem('refreshToken', refetchTokenData.refreshToken);
+
+                    // re get me:
+                    const getMeAgainResponse = await fetchMe(refetchTokenData.accessToken);
+                    
+                    // get me failed:
+                    if(!getMeAgainResponse.ok) {
+                        errorMessage = await getMeAgainResponse.json();
+                        throw new Error('Fail get me again. Cause ' + errorMessage.message);//push /auth/login
+                    }
+
+                    // if re get me ok:
+                    const getMeAgainJsonData = await getMeAgainResponse.json();
+                    if(!('username' in getMeAgainJsonData)) {
+                        throw new Error('Getted user data is unvalid');//push /auth/login
+                    }
+
+                    commit('me', getMeAgainJsonData);
+                    return 'Success get me again';
+                }
+
+                const meData = await firstGetMeResponse.json();
+                commit('me', meData);
+                return 'Success to get user info.';
+            } catch (error) {
+                throw new Error(error);
             }
         },
         async login({ commit }, { username, password }) {
@@ -133,31 +136,25 @@ export default new Vuex.Store({
                     body: JSON.stringify({
                       username,
                       password,
-                      expiresInMins: 30,
+                      expiresInMins: 5,
                     }),
                     // credentials: 'include'
                 });
 
                 if(!response.ok) {
-                    if(response.status===400) {
-                        return Promise.reject('Invalid username or password!');
-                    } else {
-                        const jsonError = await response.json();
-                        if('message' in jsonError) {
-                            return Promise.reject(`Error: ${jsonError.message}`);
-                        }
-                        // throw new Error(`HTTP error! status: ${response.status}`);
-                        return Promise.reject(`Error: ${JSON.stringify(jsonError)}`);
-                    }
+                    const errorMessage = await response.json();
+                    throw new Error(errorMessage.message);
                 }
 
-                const jsonLogin = await response.json();
-                localStorage.setItem('accessToken', jsonLogin.accessToken);
-                localStorage.setItem('refreshToken', jsonLogin.refreshToken);
-                commit('login', jsonLogin);
-                return Promise.resolve('Success to login');
+                const loginJsonData = await response.json();
+                localStorage.setItem('accessToken', loginJsonData.accessToken);
+                localStorage.setItem('refreshToken', loginJsonData.refreshToken);
+
+                commit('login', loginJsonData);
+                
+                return 'Login successfully!';
             } catch (error) {
-                return Promise.reject('Error login:', 'message' in error ? error.message : error);
+                throw new Error(error.message);
             }
         },
         async fetchProducts({ commit, state }, {query: { limit = 10, sortBy, order }, exchangeRate = 24600, convertToLocaleAmountOnly, isLoadMore = false}) {
@@ -166,7 +163,6 @@ export default new Vuex.Store({
             try {
                 const response = await fetch(url);
                 if(!response.ok) {
-                    // throw new Error(`HTTP error! status: ${response.status}`);
                     return Promise.reject(`HTTP error! status: ${response.status}`);
                 }
                 const { products } = await response.json();

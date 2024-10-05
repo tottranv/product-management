@@ -54,7 +54,7 @@ router.beforeEach((to, from, next) => {
       next();
     }
   } catch (error) {
-    throw new Error("An error occur", error);
+    throw new Error(error.message);
   }
 });
 

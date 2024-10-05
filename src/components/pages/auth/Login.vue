@@ -59,20 +59,17 @@ export default {
         },
         handleSubmit(e) {
             e.preventDefault();
-            this.form.validateFields((err) => {//,values
+            this.form.validateFields(async (err) => {//,values
                 if (!err) {
                     // console.log('Received values of form: ', values);
                     const username = this.form.getFieldValue('username');
                     const password = this.form.getFieldValue('password');
                     try {
-                        this.login({ username, password }).then(() => {
-                            this.$router.push('/product/list');
-                            this.$message.success('Login successfully!');
-                        }).catch(err => {
-                            this.$message.error(err);
-                        })
+                        await this.login({ username, password });
+                        this.$router.push('/product/list');
+                        this.$message.success('Login successfully!');
                     } catch (error) {
-                        this.$message.error(`Login has failed. Cause ${error}`);
+                        this.$message.error(error.message);
                     }
                 }
             });
