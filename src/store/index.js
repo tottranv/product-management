@@ -257,11 +257,12 @@ export default new Vuex.Store({
             });
             
             if(!response.ok) {
-                return Promise.reject(`Delete failed! ${response.statusText}`);
+                const errorMessage = await response.json();
+                throw new Error(`Delete failed! ${errorMessage.message}`);
             }
 
             commit('deleteProduct', id);
-            return Promise.resolve('Product is deleted');
+            return 'Product is deleted';
         },
         setBreadcrumb: ({state}, breadcrumb) => {
             state.breadcrumb = breadcrumb;

@@ -207,12 +207,13 @@ export default {
         handleDelete(id) {
             this.$confirm({
                 content: `Are you sure delete this product item ${id}?`,
-                onOk: () => {
-                    this.deleteProduct(id).then(() => {
+                onOk: async () => {
+                    try {
+                        await this.deleteProduct(id);
                         this.$message.success('Product deleted successfully');
-                    }).catch(error => {
-                        this.$message.error(error);
-                    });
+                    } catch (error) {
+                        this.$message.error(error.message);
+                    }
                 },
                 onCancel: () => {
                     // console.log('Cancel');
