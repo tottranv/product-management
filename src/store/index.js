@@ -192,15 +192,16 @@ export default new Vuex.Store({
             try {
                 const response = await fetch(`https://dummyjson.com/products/${id}`);
                 if(!response.ok) {
-                    return Promise.reject(`Fetch product ${id} failed. ${JSON.stringify(response.statusText)}`);
+                    const errorMessage = await response.json();
+                    throw new Error(errorMessage.message);
                 }
-                const result = await response.json();
-                if(result) {
-                    commit('getProductById', result);
-                    return Promise.resolve(result);
+                const product = await response.json();
+                if(product) {
+                    commit('getProductById', product);
+                    return 'Get product successfully!';
                 }
             } catch (error) {
-                return Promise.reject(`Fetch product ${id} failed. ${JSON.stringify(error)}`);
+                throw new Error(error.message);
             }
         },
         async addProduct({ commit }, product) {

@@ -43,7 +43,7 @@ export default {
         ...mapState(['viewProduct']),
     },
     created() {
-        this.getProductById({ id: this.id });
+        this.onGetProduct();
     },
     mounted() {
         this.$helpers.setBreadcrumbFn([
@@ -59,6 +59,13 @@ export default {
         ...mapActions(['getProductById', 'updateProduct', 'setBreadcrumb']),
         handleBack() {
             this.$router.back();
+        },
+        async onGetProduct() {
+            try {
+                await this.getProductById({ id: this.id });
+            } catch (error) {
+                this.$message.error(error.message);
+            }
         },
         handleSubmit(e) {
             e.preventDefault();
