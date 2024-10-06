@@ -4,7 +4,7 @@
         <a-layout>
             <Header v-if="sharedData.isMobileMode" :collapsed="collapsedSidebar"
                 @onCollapseChange="handleCollapseChange" />
-            <a-layout-content class="main-layout-content" :class="!collapsedSidebar ? 'opacity-15' : ''">
+            <a-layout-content class="main-layout-content" :class="!collapsedSidebar ? 'max-sm:opacity-15' : ''">
                 <Breadcrumb />
                 <div class="main-content-inner">
                     <router-view />
