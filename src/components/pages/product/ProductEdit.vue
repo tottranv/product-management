@@ -6,8 +6,12 @@
         <template v-else>
             <a-button @click="handleBack">Back</a-button>
             <a-form :form="form" @submit="handleSubmit" :wrapper-col="{ span: 24 }">
-                <img v-for="(image, index) in viewProduct.images" :key="index"
-                    :alt="`${viewProduct.name}'s image ${++index}'`" :src="image" class="w-20" />
+                <a-carousel :after-change="onChange" autoplay="true"
+                    class="sm:max-w-[400px] border p-3 rounded m-3 [&_img]:block [&_img]:mx-auto [&_.slick-slide]:bg-gray-400 [&_.slick-slide]:p-6 [&_.slick-dots]:bottom-[10px]">
+                    <div v-for="(image, index) in viewProduct.images" :key="index">
+                        <img :alt="`${viewProduct.name}'s image ${++index}'`" :src="image" class="w-20" />
+                    </div>
+                </a-carousel>
                 <a-form-item label="Name">
                     <a-input v-decorator="['name', { rules: [{ required: true, message: 'Please input name' }] }]" />
                 </a-form-item>
@@ -48,7 +52,7 @@ export default {
     mounted() {
         this.$helpers.setBreadcrumbFn([
             { icon: 'home', link: '/', text: 'Home' },
-            { icon: 'ordered-list', link: '/', text: 'Products' },
+            { icon: 'table', link: '/', text: 'Products' },
             { text: 'Edit Product' },
         ], this.setBreadcrumb);
     },
@@ -89,6 +93,9 @@ export default {
                 }
             });
         },
+        onChange(a, b, c) {
+            console.log(a, b, c);
+        },
     },
     watch: {
         viewProduct: {
@@ -105,3 +112,4 @@ export default {
     },
 }
 </script>
+<style scoped></style>

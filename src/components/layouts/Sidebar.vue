@@ -1,32 +1,32 @@
 <template>
     <a-layout-sider :collapsed="collapsed" :collapsible="!sharedData.isMobileMode" @collapse="onCollapse">
         <div class="logo" />
-        <a-menu theme="dark" :default-selected-keys="['1']" mode="inline">
-            <a-sub-menu key="sub1">
+        <a-menu theme="dark" :default-selected-keys="['1']" mode="inline" @select="selectChange">
+            <a-sub-menu key="product">
                 <span slot="title"><a-icon type="laptop" /><span>Product</span></span>
-                <a-menu-item key="1">
+                <a-menu-item key="listProduct">
                     <router-link to="/">
                         <a-icon type="ordered-list" />
                         List product
                     </router-link>
                 </a-menu-item>
-                <a-menu-item key="2">
+                <a-menu-item key="addProduct">
                     <router-link to="/product/add">
                         <a-icon type="plus" />
                         Add product
                     </router-link>
                 </a-menu-item>
             </a-sub-menu>
-            <a-sub-menu key="sub2">
+            <a-sub-menu key="user">
                 <span slot="title"><a-icon type="user" /><span>User</span></span>
-                <a-menu-item key="3">
+                <a-menu-item key="profile">
                     <router-link to="/profile">
                         <a-icon type="user" />
                         Profile
                     </router-link>
                 </a-menu-item>
             </a-sub-menu>
-            <a-menu-item key="4">
+            <a-menu-item key="logout">
                 <a-icon type="logout" />
                 <span class="nav-text" @click="handleSignout">Logout</span>
             </a-menu-item>
@@ -50,6 +50,9 @@ export default {
         },
         onCollapse(collapsed) {
             this.$emit('onCollapseSidebar', collapsed);
+        },
+        selectChange(value) {
+            this.onCollapse(!!value);
         },
     }
 }

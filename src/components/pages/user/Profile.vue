@@ -5,11 +5,6 @@
         </template>
         <template v-else>
             <img slot="cover" alt="example" :src="user.image" class="h-40 object-cover" />
-            <template slot="actions">
-                <a-icon key="setting" type="setting" />
-                <a-icon key="edit" type="edit" />
-                <a-icon key="ellipsis" type="ellipsis" />
-            </template>
             <a-card-meta :title="user.firstName + ' ' + user.lastName" :description="user.company && user.company.name">
                 <a-avatar slot="avatar" :src="user.image" />
             </a-card-meta>
