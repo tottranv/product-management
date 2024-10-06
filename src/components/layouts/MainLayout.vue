@@ -1,10 +1,13 @@
 <template>
     <a-layout id="components-layout-demo-fixed" class="h-[100vh] overflow-hidden">
-        <Sidebar :collapsed="collapsedSidebar" @onCollapseSidebar="handleCollapseChange" />
+        <Sidebar v-show="!sharedData.isMobileMode" :collapsed="collapsedSidebar"
+            @onCollapseSidebar="collapseSiderChange" />
+
+        <DrawerNav v-show="sharedData.isMobileMode" :visible="visibleDrawerNav" @onClose="onClose" />
         <a-layout>
-            <Header v-if="sharedData.isMobileMode" :collapsed="collapsedSidebar"
-                @onCollapseChange="handleCollapseChange" />
-            <a-layout-content class="main-layout-content" :class="!collapsedSidebar ? 'max-sm:opacity-15' : ''">
+            <Header v-if="sharedData.isMobileMode" :collapsed="visibleDrawerNav"
+                @onCollapseChange="collapseSiderChange" />
+            <a-layout-content class="main-layout-content">
                 <Breadcrumb />
                 <div class="main-content-inner">
                     <router-view />
@@ -21,10 +24,12 @@ export default {
         Sidebar: () => import('./Sidebar.vue'),
         Header: () => import('./Header.vue'),
         Breadcrumb: () => import('./Breadcrumb.vue'),
+        DrawerNav: () => import('./DrawerNav.vue'),
     },
     data() {
         return {
             collapsedSidebar: Boolean(Number(localStorage.getItem('sidebarCollapsed'))),
+            visibleDrawerNav: Boolean(Number(localStorage.getItem('visibleDrawerNav'))),
             sharedData: Vue.observable({
                 isMobileMode: this.getMobileMode(window.innerWidth),
                 width: window.innerWidth,
@@ -49,16 +54,22 @@ export default {
             return width < 640;
         },
         onResize(event) {
-            this.$nextTick(() => {
-                this.collapsedSidebar = true;
-            });
             this.sharedData.isMobileMode = event.currentTarget && this.getMobileMode(event.currentTarget.innerWidth);
             this.sharedData.width = window.innerWidth;
             this.sharedData.height = window.innerHeight;
         },
-        handleCollapseChange(value) {
-            this.collapsedSidebar = value;
-            localStorage.setItem('sidebarCollapsed', value ? 1 : 0);
+        collapseSiderChange(value) {
+            if (this.sharedData.isMobileMode) {
+                this.visibleDrawerNav = true;
+                localStorage.setItem('visibleDrawerNav', 1);
+            } else {
+                this.collapsedSidebar = value;
+                localStorage.setItem('sidebarCollapsed', value ? 1 : 0);
+            }
+        },
+        onClose() {
+            this.visibleDrawerNav = false;
+            localStorage.setItem('visibleDrawerNav', 0);
         }
     },
 };

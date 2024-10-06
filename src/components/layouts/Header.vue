@@ -1,8 +1,8 @@
 <template>
     <a-layout-header class="main-layout-header" :style="{ position: 'fixed', zIndex: 1, width: '100%' }">
-        <a-button class="trigger text-white inline-flex items-center justify-center"
-            :type="collapsed ? 'primary' : 'danger'" :icon="collapsed ? 'menu' : 'close'" size="small" shape="circle"
-            @click="handleCollapse">
+        <a-button
+            class="trigger text-white inline-flex items-center justify-center shadow-lg bg-transparent border-0 [&_i]:scale-[1.25]"
+            type="default" icon="menu" size="small" @click="handleCollapse">
         </a-button>
         <div class="logo" />
     </a-layout-header>
