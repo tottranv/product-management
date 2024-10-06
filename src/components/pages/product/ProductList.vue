@@ -58,10 +58,11 @@
                 <div slot="header" class="border p-3 hover:bg-gray-100 flex items-center justify-between"
                     :class="sort.type === 'title' && '[>span]:font-bold'">
                     <span class=" flex items-center gap-1 cursor-pointer">
+                        <a-icon type="filter" />
                         <span @click="setSort('title')"
-                            class="flex items-center justify-between hover:opacity-75 hover:underline">
+                            class="flex items-center justify-between hover:opacity-75 underline">
                             <a-icon
-                                :type="`arrow-${sort.currentSort && sort.currentSort.type === 'title' && sort.currentSort.by ? 'up' : 'down'}`"
+                                :type="`sort-${sort.currentSort && sort.currentSort.type === 'title' && sort.currentSort.by ? 'ascending' : 'descending'}`"
                                 v-show="sort.enable && sort.currentSort.type === 'title'"></a-icon>
                             Product's info
                         </span>
@@ -70,10 +71,11 @@
                     </span>
 
                     <span class="flex items-center gap-1 cursor-pointer">
+                        <a-icon type="filter" />
                         <span @click="setSort('price')"
-                            class="flex items-center justify-between hover:opacity-75 hover:underline">
+                            class="flex items-center justify-between hover:opacity-75 underline">
                             <a-icon
-                                :type="`arrow-${sort.currentSort && sort.currentSort.type === 'price' && sort.currentSort.by ? 'up' : 'down'}`"
+                                :type="`sort-${sort.currentSort && sort.currentSort.type === 'price' && sort.currentSort.by ? 'ascending' : 'descending'}`"
                                 v-show="sort.enable && sort.currentSort.type === 'price'"></a-icon>
                             Price
                         </span>
