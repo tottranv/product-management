@@ -1,18 +1,18 @@
 <template>
-    <a-layout id="components-layout-demo-fixed" style="min-height: 100vh">
+    <a-layout id="components-layout-demo-fixed" class="h-[100vh] overflow-hidden">
         <Sidebar :collapsed="collapsedSidebar" @onCollapseSidebar="handleCollapseChange" />
         <a-layout>
             <Header v-if="sharedData.isMobileMode" :collapsed="collapsedSidebar"
                 @onCollapseChange="handleCollapseChange" />
             <a-layout-content class="main-layout-content" :class="!collapsedSidebar ? 'max-sm:opacity-15' : ''">
                 <Breadcrumb />
-                <div class="main-content-inner">
-                    <router-view />
-                </div>
+                <!-- <div class="main-content-inner hidden">
+                </div> -->
+                <router-view />
             </a-layout-content>
-            <a-layout-footer style="text-align: center">
+            <!-- <a-layout-footer style="text-align: center">
                 Ant Design ©2018 Created by Ant UED
-            </a-layout-footer>
+            </a-layout-footer> -->
         </a-layout>
     </a-layout>
 </template>

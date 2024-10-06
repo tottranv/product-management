@@ -4,7 +4,7 @@
             <a-skeleton avatar :paragraph="{ rows: 1 }" />
         </template>
         <template v-else>
-            <a-breadcrumb class="bg-white px-3 sm:px-6 pt-3">
+            <a-breadcrumb class="pl-2 sm:pl-1 pt-3 mb-3">
                 <a-breadcrumb-item v-for="item in breadcrumb" :key="item.text">
                     <router-link v-if="item.link" :to="item.link">
                         <a-icon v-if="item.icon" :type="item.icon" class="mr-1" />

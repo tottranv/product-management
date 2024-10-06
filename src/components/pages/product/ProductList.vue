@@ -4,8 +4,8 @@
             <a-skeleton avatar :paragraph="{ rows: 4 }" />
         </template>
         <template v-else>
-            <a-button @click="go('/product/add')" class="flex items-center mb-2"><a-icon theme="outlined"
-                    type="plus" /><span>Add</span></a-button>
+            <a-button @click="go('/product/add')" class="flex items-center mb-2 max-sm:ml-2" type="primary">
+                <a-icon theme="outlined" type="plus" /><span>Add</span></a-button>
 
             <!-- settings -->
             <div v-if="sharedData && !sharedData.isMobileMode" class="grid grid-cols-4 gap-1 rounded border shadow p-2 mb-2
