@@ -297,7 +297,7 @@ export default {
         async onScroll(event) {
             const target = event.target;
             // check scroll end list:
-            if (!this.loading && target.scrollTop + target.clientHeight >= target.scrollHeight - 200) {
+            if (!this.loading && target.scrollTop + target.clientHeight >= target.scrollHeight - 400) {
                 this.onFetchProduct({
                     query: {
                         limit: 25,
