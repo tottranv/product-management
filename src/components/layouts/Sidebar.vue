@@ -1,5 +1,5 @@
 <template>
-    <a-layout-sider v-model="collapsed" collapsible @collapse="onCollapse">
+    <a-layout-sider :collapsed="collapsed" :collapsible="!sharedData.isMobileMode" @collapse="onCollapse">
         <div class="logo" />
         <a-menu theme="dark" :default-selected-keys="['1']" mode="inline">
             <a-sub-menu key="sub1">
@@ -36,10 +36,11 @@
 <script>
 export default {
     name: 'SiderBar',
-    data() {
-        return {
-            collapsed: Boolean(Number(localStorage.getItem('sidebarCollapsed'))),
-        }
+    inject: ['sharedData'],
+    props: {
+        collapsed: {
+            type: Boolean,
+        },
     },
     methods: {
         handleSignout() {
@@ -48,8 +49,15 @@ export default {
             this.$router.push('/auth/login');
         },
         onCollapse(collapsed) {
-            localStorage.setItem('sidebarCollapsed', collapsed ? 1 : 0);
+            this.$emit('onCollapseSidebar', collapsed);
         },
     }
 }
 </script>
+<style scoped>
+@media screen and (max-width: 576px) {
+    .ant-layout-sider-collapsed {
+        @apply !flex-[0] !min-w-[0px] !-translate-x-[80px];
+    }
+}
+</style>

@@ -1,9 +1,10 @@
 <template>
     <a-layout id="components-layout-demo-fixed" style="min-height: 100vh">
-        <Sidebar v-if="!sharedData.isMobileMode" />
+        <Sidebar :collapsed="collapsedSidebar" @onCollapseSidebar="handleCollapseChange" />
         <a-layout>
-            <Header v-if="sharedData.isMobileMode" />
-            <a-layout-content class="main-layout-content">
+            <Header v-if="sharedData.isMobileMode" :collapsed="collapsedSidebar"
+                @onCollapseChange="handleCollapseChange" />
+            <a-layout-content class="main-layout-content" :class="!collapsedSidebar ? 'opacity-15' : ''">
                 <Breadcrumb />
                 <div class="main-content-inner">
                     <router-view />
@@ -26,6 +27,7 @@ export default {
     },
     data() {
         return {
+            collapsedSidebar: Boolean(Number(localStorage.getItem('sidebarCollapsed'))),
             sharedData: Vue.observable({
                 isMobileMode: this.getMobileMode(window.innerWidth),
                 width: window.innerWidth,
@@ -53,6 +55,10 @@ export default {
             this.sharedData.isMobileMode = event.currentTarget && this.getMobileMode(event.currentTarget.innerWidth);
             this.sharedData.width = window.innerWidth;
             this.sharedData.height = window.innerHeight;
+        },
+        handleCollapseChange(value) {
+            this.collapsedSidebar = value;
+            localStorage.setItem('sidebarCollapsed', value ? 1 : 0);
         }
     },
 };
@@ -65,7 +71,7 @@ export default {
     }
 
     .main-layout-content {
-        @apply m-[60px_0_0_0] sm:m-4;
+        @apply m-[54px_0_0_0] sm:m-4;
 
         .main-content-inner {
             @apply p-3 sm:p-4 bg-white min-h-screen;

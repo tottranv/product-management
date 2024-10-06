@@ -19,8 +19,9 @@
             </div>
 
             <!-- filters /  sort -->
-            <div v-if="settings.filters.showPriceRange" class="grid grid-cols-2 gap-4 rounded border shadow p-2 mb-2
-        [&>div]:border [&>div]:rounded [&>div]:p-2">
+            <div v-if="settings.filters.showPriceRange" class="grid rounded border shadow p-2 mb-2
+        [&>div]:border [&>div]:rounded [&>div]:p-2"
+                :class="(sharedData ? !sharedData.isMobileMode ? 'grid-cols-2 gap-4' : 'grid-cols-1 gap-2' : '')">
                 <div v-if="settings.filters.showPriceRange">
                     {{ (sharedData ? !sharedData.isMobileMode ? 'Filter by price:' : 'Price:' : '') }}
                     <a-slider range :default-value="priceRangeFilter" :min="100000" :max="10000000" :step="100000"
@@ -94,7 +95,7 @@
                         <a slot="title">{{ item.name }}</a>
                         <a-avatar slot="avatar" :src="item.thumbnail"></a-avatar>
                     </a-list-item-meta>
-                    <div class="text-green-500 font-bold">{{ item.price.toLocaleString() }}đ</div>
+                    <div class="list-item-price text-green-500 font-bold">{{ item.price.toLocaleString() }}đ</div>
                 </a-list-item>
             </a-list>
         </template>
@@ -339,3 +340,42 @@ export default {
     },
 };
 </script>
+<style lang="scss">
+.product-item {
+    @media screen and (max-width: 576px) {
+        .ant-list-item-meta {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .ant-list-item-meta-avatar {
+            .ant-avatar.ant-avatar-circle.ant-avatar-image {
+                height: 100px;
+                width: auto;
+
+                img {
+                    height: 100px;
+                }
+            }
+        }
+
+        .ant-list-item-meta-content {
+            max-width: 140px;
+            text-align: center;
+
+            .ant-list-item-meta-title {
+                margin: 0;
+            }
+        }
+
+        .list-item-price {
+            text-align: center;
+        }
+
+        .ant-list-item-action {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+    }
+}
+</style>
