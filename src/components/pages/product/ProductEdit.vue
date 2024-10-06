@@ -6,7 +6,7 @@
         <template v-else>
             <a-button @click="handleBack">Back</a-button>
             <a-form :form="form" @submit="handleSubmit" :wrapper-col="{ span: 24 }">
-                <a-carousel :after-change="onChange" autoplay="true"
+                <a-carousel :after-change="onChange" :autoplay="true"
                     class="sm:max-w-[400px] border p-3 rounded m-3 [&_img]:block [&_img]:mx-auto [&_.slick-slide]:bg-gray-400 [&_.slick-slide]:p-6 [&_.slick-dots]:bottom-[10px]">
                     <div v-for="(image, index) in viewProduct.images" :key="index">
                         <img :alt="`${viewProduct.name}'s image ${++index}'`" :src="image" class="w-20" />

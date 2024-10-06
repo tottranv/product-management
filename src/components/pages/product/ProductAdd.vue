@@ -38,7 +38,7 @@ export default {
     mounted() {
         this.$helpers.setBreadcrumbFn([
             { icon: 'home', link: '/', text: 'Home' },
-            { icon: 'ordered-list', link: '/', text: 'Products' },
+            { icon: 'table', link: '/', text: 'Products' },
             { text: 'Add Product' },
         ], this.setBreadcrumb);
     },
