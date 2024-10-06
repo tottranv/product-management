@@ -8,7 +8,7 @@
                     type="plus" /><span>Add</span></a-button>
 
             <!-- settings -->
-            <div class="grid grid-cols-4 gap-1 rounded border shadow p-2 mb-2
+            <div v-if="sharedData && !sharedData.isMobileMode" class="grid grid-cols-4 gap-1 rounded border shadow p-2 mb-2
         [&>div]:border [&>div]:rounded [&>div]:p-2">
                 <label name="show-price">
                     Show filter:
@@ -22,16 +22,19 @@
             <div v-if="settings.filters.showPriceRange" class="grid grid-cols-2 gap-4 rounded border shadow p-2 mb-2
         [&>div]:border [&>div]:rounded [&>div]:p-2">
                 <div v-if="settings.filters.showPriceRange">
-                    Filter by price:
+                    {{ (sharedData ? !sharedData.isMobileMode ? 'Filter by price:' : 'Price:' : '') }}
                     <a-slider range :default-value="priceRangeFilter" :min="100000" :max="10000000" :step="100000"
                         :tip-formatter="formatCurrency" v-model="priceRangeFilter"
                         @afterChange="onAfterChange"></a-slider>
-                    <p>{{ 'From ' + priceRangeFilter[0].toLocaleString() + 'đ to ' +
+                    <p>{{ (sharedData ? !sharedData.isMobileMode ? 'From ' : '' : '') +
+                        priceRangeFilter[0].toLocaleString() + (sharedData ? !sharedData.isMobileMode ? 'đ to ' : 'đ - '
+                            : '') +
                         priceRangeFilter[1].toLocaleString() +
                         'đ' }}
                     </p>
                 </div>
-                <div>
+                <div class="flex"
+                    :class="sharedData ? !sharedData.isMobileMode ? 'flex-row gap-1' : 'flex-col gap-3' : ''">
                     Instock
                     <label name="show-price">
                         <a-switch @click="!settings.filters.inStock" size="small" v-model="settings.filters.inStock"
@@ -47,7 +50,8 @@
         <template v-else>
             <!-- new UI product list -->
             <a-list ref="productList" size="small" :data-source="filteredProducts" class="border rounded my-2 p-3"
-                :loading="loading">
+                :style="{ minHeight: `${minHeightContent}px` }" :loading="loading"
+                :itemLayout="(sharedData ? !sharedData.isMobileMode ? 'horizontal' : 'vertical' : 'horizontal')">
                 <!-- header zone -->
                 <div slot="header" class="border p-3 hover:bg-gray-100 flex items-center justify-between"
                     :class="sort.type === 'title' && '[>span]:font-bold'">
@@ -79,7 +83,8 @@
                 </div>
 
                 <!-- item zone -->
-                <a-list-item slot="renderItem" slot-scope="item" class="hover:border-green-500 hover:bg-gray-100 p-2">
+                <a-list-item slot="renderItem" slot-scope="item"
+                    class="product-item hover:border-green-500 hover:bg-gray-100 p-2">
                     <a-button slot="actions" @click="go(`/product/edit/${item.id}`)" class="flex items-center"><a-icon
                             theme="outlined" type="edit" /></a-button>
                     <a-button slot="actions" @click="handleDelete(item.id)" type="danger"
@@ -113,6 +118,7 @@ const getSettingsLocal = () => (localStorage.getItem('settings') ? JSON.parse(lo
 });
 
 export default {
+    inject: ['sharedData'],
     data() {
         return {
             priceRangeFilter: [100000, 10000000],
@@ -161,6 +167,12 @@ export default {
                 totalElements,
             };
         },
+        minHeightContent() {
+            return this.sharedData ? this.sharedData.isMobileMode ? this.sharedData.height - 320 : this.sharedData.height - 320 : 400;
+        },
+        minHeightListItemContent() {
+            return this.minHeightContent ? this.sharedData.isMobileMode ? this.minHeightContent - 90 : this.minHeightContent - 100 : 300;
+        },
     },
     watch: {
         filteredProducts(newVal, oldVal) {
@@ -169,7 +181,7 @@ export default {
                     this.setStyle();
                 })
             }
-        }
+        },
     },
     created() {
         this.onFetchProduct({
@@ -315,16 +327,15 @@ export default {
         setStyle() {
             this.list = this.$refs.productList.$el.querySelector('ul.ant-list-items');
             if (this.list) {
-                this.list.classList.add('max-h-[300px]', 'overflow-auto');
-                const debounced = this.$helpers.debounce(this.onScroll, 250);
-                this.list.addEventListener('scroll', debounced);
+                this.$nextTick(() => {
+                    this.list.classList.add('overflow-auto');
+                    this.list.style.maxHeight = `${this.minHeightListItemContent}px`;
+
+                    const debounced = this.$helpers.debounce(this.onScroll, 250);
+                    this.list.addEventListener('scroll', debounced);
+                });
             }
         },
     },
 };
 </script>
-<!-- <style>
-v-deep .ant-list-items {
-    @apply max-h-[300px] overflow-auto;
-}
-</style> -->

@@ -17,7 +17,6 @@
                     </router-link>
                 </a-menu-item>
             </a-sub-menu>
-
             <a-sub-menu key="sub2">
                 <span slot="title"><a-icon type="user" /><span>User</span></span>
                 <a-menu-item key="3">
@@ -31,7 +30,6 @@
                 <a-icon type="logout" />
                 <span class="nav-text" @click="handleSignout">Logout</span>
             </a-menu-item>
-
         </a-menu>
     </a-layout-sider>
 </template>
