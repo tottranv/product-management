@@ -52,6 +52,9 @@ export default {
             return width < 640;
         },
         onResize(event) {
+            this.$nextTick(() => {
+                this.collapsedSidebar = true;
+            });
             this.sharedData.isMobileMode = event.currentTarget && this.getMobileMode(event.currentTarget.innerWidth);
             this.sharedData.width = window.innerWidth;
             this.sharedData.height = window.innerHeight;
