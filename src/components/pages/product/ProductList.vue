@@ -50,7 +50,8 @@
         </template>
         <template v-else>
             <!-- new UI product list -->
-            <a-list ref="productList" size="small" :data-source="filteredProducts" class="border rounded my-2 p-3"
+            <a-list ref="productList" size="small" :data-source="filteredProducts"
+                class="border rounded sm:my-2 sm:p-3 max-sm:[&_.ant-list-header]:py-0"
                 :style="{ minHeight: `${minHeightContent}px` }" :loading="loading"
                 :itemLayout="(sharedData ? !sharedData.isMobileMode ? 'horizontal' : 'vertical' : 'horizontal')">
                 <!-- header zone -->
