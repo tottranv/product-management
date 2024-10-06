@@ -91,7 +91,7 @@
                     <a-button slot="actions" @click="handleDelete(item.id)" type="danger"
                         class="flex items-center"><a-icon type="delete" /></a-button>
 
-                    <a-list-item-meta :description="item.desc">
+                    <a-list-item-meta :description="item.desc" @click="go(`/product/edit/${item.id}`)">
                         <a slot="title">{{ item.name }}</a>
                         <a-avatar slot="avatar" :src="item.thumbnail"></a-avatar>
                     </a-list-item-meta>
