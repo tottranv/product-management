@@ -169,7 +169,7 @@ export default {
             };
         },
         minHeightContent() {
-            return this.sharedData ? this.sharedData.isMobileMode ? this.sharedData.height - 320 : this.sharedData.height - 320 : 400;
+            return this.sharedData ? this.sharedData.isMobileMode ? this.sharedData.height - 120 : this.sharedData.height - 320 : 400;
         },
         minHeightListItemContent() {
             return this.minHeightContent ? this.sharedData.isMobileMode ? this.minHeightContent - 90 : this.minHeightContent - 100 : 300;
@@ -350,11 +350,11 @@ export default {
 
         .ant-list-item-meta-avatar {
             .ant-avatar.ant-avatar-circle.ant-avatar-image {
-                height: 100px;
+                height: 80px;
                 width: auto;
 
                 img {
-                    height: 100px;
+                    height: 80px;
                 }
             }
         }
@@ -365,6 +365,7 @@ export default {
 
             .ant-list-item-meta-title {
                 margin: 0;
+                font-size: 12px;
             }
         }
 
