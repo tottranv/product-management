@@ -50,7 +50,6 @@ export default new Vuex.Store({
     actions: {
         async me({ commit }) {
             try {
-                let errorMessage = '';
                 // ACCESS TOKEN TO GET API ME: prepare accessToken
                 const accessToken = localStorage.getItem('accessToken');
                 if(!accessToken) {
@@ -59,13 +58,13 @@ export default new Vuex.Store({
 
                 // GET: fetch me by accessToken
                 const firstGetMeResponse = await fetchMe(accessToken);
+                const jsonData = await firstGetMeResponse.json();
 
                 // IF OK:
                 if(!firstGetMeResponse.ok) {
                     // IF FAIL BECAUSE OTHER CASES:
                     if(firstGetMeResponse.status !== 401) {
-                        errorMessage = await firstGetMeResponse.json();
-                        throw new Error(`Fail token because other case. Cause ${errorMessage.message}`);
+                        throw new Error(`Fail token because other case. Cause ${jsonData.message}`);
                     }
 
                     // IF ACCESS TOKEN EXPIRED: prepare refreshToken
@@ -85,47 +84,44 @@ export default new Vuex.Store({
                         // credentials: 'include' // Include cookies (e.g., accessToken) in the request
                     });
 
+                    const refreshJsonData = await refreshResponse.json();
                     // re get accessToken error:
                     if(!refreshResponse.ok) {
-                        errorMessage = await refreshResponse.json();
-                        throw new Error('Fail refresh accessToken. Cause ' + errorMessage.message);
+                        throw new Error('Fail refresh accessToken. Cause ' + refreshJsonData.message);
                     }
 
                     // if ok:
-                    const refetchTokenData = await refreshResponse.json();//re get tokens
                     // check tokens:
-                    if(!refetchTokenData && !('accessToken' in refetchTokenData) && !('refreshToken' in refetchTokenData)) {
+                    if(!refreshJsonData && !('accessToken' in refreshJsonData) && !('refreshToken' in refreshJsonData)) {
                         throw new Error('The tokens refreshed was unvalid.');
                     }
 
                     // save tokens:
-                    localStorage.setItem('accessToken', refetchTokenData.accessToken);
-                    localStorage.setItem('refreshToken', refetchTokenData.refreshToken);
+                    localStorage.setItem('accessToken', refreshJsonData.accessToken);
+                    localStorage.setItem('refreshToken', refreshJsonData.refreshToken);
 
                     // re get me:
-                    const getMeAgainResponse = await fetchMe(refetchTokenData.accessToken);
+                    const getMeAgainResponse = await fetchMe(refreshJsonData.accessToken);
+                    const reGetMeJsonData = await getMeAgainResponse.json();
                     
                     // get me failed:
                     if(!getMeAgainResponse.ok) {
-                        errorMessage = await getMeAgainResponse.json();
-                        throw new Error('Fail get me again. Cause ' + errorMessage.message);
+                        throw new Error('Fail get me again. Cause ' + reGetMeJsonData.message);
                     }
 
                     // if re get me ok:
-                    const getMeAgainJsonData = await getMeAgainResponse.json();
-                    if(!('username' in getMeAgainJsonData)) {
+                    if(!('username' in reGetMeJsonData)) {
                         throw new Error('Getted user data is unvalid');
                     }
 
-                    commit('me', getMeAgainJsonData);
-                    return 'Success get me again';
+                    commit('me', reGetMeJsonData);
+                    return 'Success get me.';
                 }
 
-                const meData = await firstGetMeResponse.json();
-                commit('me', meData);
+                commit('me', jsonData);
                 return 'Success to get user info.';
             } catch (error) {
-                throw new Error(error);
+                throw new Error(error.message);
             }
         },
         async login({ commit }, { username, password }) {
@@ -165,11 +161,11 @@ export default new Vuex.Store({
             }&select=id,title,price,description,stock,images,thumbnail`;
             try {
                 const response = await fetch(url);
+                const jsonData = await response.json();
                 if(!response.ok) {
-                    const errorMessage = await response.json();
-                    throw new Error(errorMessage.message);
+                    throw new Error(jsonData.message);
                 }
-                const { products } = await response.json();
+                const { products } = jsonData;
                 if(products && Array.isArray(products)) {
                     const convertProducts = products.map(({
                         id,title,price,description,stock,images,thumbnail
@@ -182,7 +178,7 @@ export default new Vuex.Store({
                     commit(isLoadMore ? 'loadMoreProducts' : 'initialProducts', convertProducts);
                     return 'Success to fetch product.';
                 } else {
-                    throw new Error('Invalid data format ' + JSON.stringify(products));
+                    throw new Error(JSON.stringify(products));
                 }
             } catch (error) {
                 throw new Error(error.message);
@@ -191,14 +187,15 @@ export default new Vuex.Store({
         async getProductById({ commit }, { id }) {
             try {
                 const response = await fetch(`https://dummyjson.com/products/${id}`);
+                const jsonData = await response.json();
                 if(!response.ok) {
-                    const errorMessage = await response.json();
-                    throw new Error(errorMessage.message);
+                    throw new Error(jsonData.message);
                 }
-                const product = await response.json();
-                if(product) {
-                    commit('getProductById', product);
+                if(jsonData) {
+                    commit('getProductById', jsonData);
                     return 'Get product successfully!';
+                } else {
+                    throw new Error(JSON.stringify(jsonData));
                 }
             } catch (error) {
                 throw new Error(error.message);
@@ -222,7 +219,7 @@ export default new Vuex.Store({
     
                 if(jsonResponse) {
                     commit('addProduct', jsonResponse);
-                    return 'Successfully add product(test in response)';
+                    return 'Product added';
                 } else {
                     throw new Error(JSON.stringify(jsonResponse));
                 }
