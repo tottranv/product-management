@@ -6,13 +6,10 @@
                 @onCollapseChange="handleCollapseChange" />
             <a-layout-content class="main-layout-content" :class="!collapsedSidebar ? 'max-sm:opacity-15' : ''">
                 <Breadcrumb />
-                <!-- <div class="main-content-inner hidden">
-                </div> -->
-                <router-view />
+                <div class="main-content-inner">
+                    <router-view />
+                </div>
             </a-layout-content>
-            <!-- <a-layout-footer style="text-align: center">
-                Ant Design ©2018 Created by Ant UED
-            </a-layout-footer> -->
         </a-layout>
     </a-layout>
 </template>
@@ -77,7 +74,7 @@ export default {
         @apply m-[54px_0_0_0] sm:m-4;
 
         .main-content-inner {
-            @apply p-3 sm:p-4 bg-white min-h-screen;
+            @apply p-3 p-4 min-h-screen;
         }
     }
 }

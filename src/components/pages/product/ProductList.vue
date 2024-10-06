@@ -4,7 +4,7 @@
             <a-skeleton avatar :paragraph="{ rows: 4 }" />
         </template>
         <template v-else>
-            <a-button @click="go('/product/add')" class="flex items-center mb-2 max-sm:ml-2" type="primary">
+            <a-button @click="go('/product/add')" class="flex items-center mb-2" type="primary">
                 <a-icon theme="outlined" type="plus" /><span>Add</span></a-button>
 
             <!-- settings -->
