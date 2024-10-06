@@ -109,7 +109,7 @@ const getSettingsLocal = () => (localStorage.getItem('settings') ? JSON.parse(lo
     filters: {
         alwaysShowTooltipPriceRange: true,
         showPriceRange: true,
-        inStock: undefined,
+        inStock: true,
     },
     view: {
         layout: {
