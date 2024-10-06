@@ -52,7 +52,9 @@ export default {
             this.$emit('onCollapseSidebar', collapsed);
         },
         selectChange(value) {
-            this.onCollapse(!!value);
+            if (this.sharedData.isMobileMode) {
+                this.onCollapse(!!value);
+            }
         },
     }
 }
