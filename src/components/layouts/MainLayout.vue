@@ -29,7 +29,7 @@ export default {
     data() {
         return {
             collapsedSidebar: Boolean(Number(localStorage.getItem('sidebarCollapsed'))),
-            visibleDrawerNav: Boolean(Number(localStorage.getItem('visibleDrawerNav'))),
+            visibleDrawerNav: false,
             sharedData: Vue.observable({
                 isMobileMode: this.getMobileMode(window.innerWidth),
                 width: window.innerWidth,
