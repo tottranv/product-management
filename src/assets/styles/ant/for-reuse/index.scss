@@ -1,3 +1,24 @@
 .anticon svg {
     display: block;
 }
+.ant-menu {
+    .ant-menu-submenu-title, .ant-menu-item {
+        @apply text-[16px];
+    }
+}
+.ant-btn {
+    @apply text-[16px];
+}
+.ant-form-item-label {
+    @apply text-[16px];
+    label {
+        @apply text-[16px];
+    }
+}
+.ant-breadcrumb {
+    @apply text-[16px];
+
+    .anticon {
+        @apply text-[16px];
+    }
+}

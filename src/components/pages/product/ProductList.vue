@@ -4,7 +4,7 @@
             <a-skeleton avatar :paragraph="{ rows: 4 }" />
         </template>
         <template v-else>
-            <a-button @click="go('/product/add')" class="flex items-center mb-2" type="primary">
+            <a-button @click="go('/product/add')" class="flex items-center mb-4" type="primary">
                 <a-icon theme="outlined" type="plus" /><span>Add</span></a-button>
 
             <!-- settings -->
@@ -67,7 +67,7 @@
                     <span class=" flex items-center gap-1 cursor-pointer">
                         <a-icon type="filter" />
                         <span @click="setSort('title')"
-                            class="flex items-center justify-between hover:opacity-75 underline">
+                            class="flex items-center justify-between hover:opacity-75 underline text-[16px]">
                             <a-icon
                                 :type="`sort-${sort.currentSort && sort.currentSort.type === 'title' && sort.currentSort.by ? 'descending' : 'ascending'}`"
                                 v-show="sort.enable && sort.currentSort.type === 'title'"></a-icon>
@@ -80,7 +80,7 @@
                     <span class="flex items-center gap-1 cursor-pointer">
                         <a-icon type="filter" />
                         <span @click="setSort('price')"
-                            class="flex items-center justify-between hover:opacity-75 underline">
+                            class="flex items-center justify-between hover:opacity-75 underline text-[16px]">
                             <a-icon
                                 :type="`sort-${sort.currentSort && sort.currentSort.type === 'price' && sort.currentSort.by ? 'descending' : 'ascending'}`"
                                 v-show="sort.enable && sort.currentSort.type === 'price'"></a-icon>
@@ -90,7 +90,7 @@
                             v-show="sort.enable" @click="removeSort"></a-icon>
                     </span>
 
-                    <span>Action</span>
+                    <span class="text-[16px]">Action</span>
                 </div>
 
                 <!-- item zone -->

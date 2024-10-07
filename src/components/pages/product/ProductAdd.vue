@@ -1,6 +1,6 @@
 <template>
     <div>
-        <a-button @click="handleBack" class="flex items-center mb-2"><a-icon theme="outlined"
+        <a-button @click="handleBack" class="flex items-center mb-4"><a-icon theme="outlined"
                 type="back" /><span>Back</span></a-button>
         <a-form :form="form" @submit="handleSubmit" :label-col="{ span: 4 }" :wrapper-col="{ span: 12 }">
             <a-form-item label="Name">
