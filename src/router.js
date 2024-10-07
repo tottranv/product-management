@@ -44,7 +44,7 @@ router.beforeEach((to, from, next) => {
   try {
     if(to.matched.some(record => record.meta.requiresAuth)) {
       if(!isAuthenticated()) {
-        showCountdownMessage(1, () => {
+        showCountdownMessage(() => {
           next({ path: '/auth/login' });//unAuthenticated!
         });
       } else {
