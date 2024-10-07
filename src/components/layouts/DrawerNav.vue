@@ -52,7 +52,7 @@ export default {
         },
         selectChange(value) {
             if (this.sharedData.isMobileMode) {
-                this.onCollapse(!!value);
+                this.$emit('onClose', value);
             }
         },
     }
