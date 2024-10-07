@@ -59,10 +59,3 @@ export default {
     }
 }
 </script>
-<style scoped>
-@media screen and (max-width: 576px) {
-    .ant-layout-sider-collapsed {
-        @apply !flex-[0] !min-w-[0px] !-translate-x-[80px];
-    }
-}
-</style>

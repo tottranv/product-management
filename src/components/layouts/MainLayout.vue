@@ -53,8 +53,8 @@ export default {
         getMobileMode(width) {
             return width < 640;
         },
-        onResize(event) {
-            this.sharedData.isMobileMode = event.currentTarget && this.getMobileMode(event.currentTarget.innerWidth);
+        onResize() {
+            this.sharedData.isMobileMode = this.getMobileMode(window.innerWidth);
             this.sharedData.width = window.innerWidth;
             this.sharedData.height = window.innerHeight;
         },
