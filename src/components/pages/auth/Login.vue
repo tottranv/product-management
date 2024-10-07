@@ -16,7 +16,7 @@
                 <a-icon slot="prefix" type="lock" class="text-tran25" />
             </a-input>
         </a-form-item>
-        <p>Hint: <code>emilys</code>/<code>emilyspass</code></p>
+        <p>Account: <code>emilys</code>/<code>emilyspass</code></p>
         <a-form-item>
             <a-button type="primary" html-type="submit" :disabled="hasErrors(form.getFieldsError())">
                 Log in
