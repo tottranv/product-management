@@ -18,11 +18,11 @@
                 </label>
             </div>
 
-            <div class="relative h-4" v-if="sharedData && sharedData.isMobileMode">
+            <div class="relative h-[19px]" v-if="sharedData && sharedData.isMobileMode">
                 <a-icon :type="`${settings.filters.showPriceRange ? 'up' : 'down'}-square`"
                     v-model="settings.filters.showPriceRange"
                     @click="setSettingVisible(!settings.filters.showPriceRange)" class="absolute right-0"
-                    theme="twoTone" two-tone-color="#1890ff" />
+                    style="font-size: 19px;" theme="twoTone" two-tone-color="#1890ff" />
             </div>
 
             <!-- filters /  sort -->
