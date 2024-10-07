@@ -24,7 +24,7 @@
                 :class="(sharedData ? !sharedData.isMobileMode ? 'grid-cols-2 gap-4' : 'grid-cols-1 gap-2' : '')">
                 <div v-if="settings.filters.showPriceRange">
                     {{ (sharedData ? !sharedData.isMobileMode ? 'Filter by price:' : 'Price:' : '') }}
-                    <a-slider range :default-value="priceRangeFilter" :min="100000" :max="1000000000" :step="200000"
+                    <a-slider range :default-value="priceRangeFilter" :min="100000" :max="1000000000" :step="100000"
                         :tip-formatter="formatCurrency" v-model="priceRangeFilter"
                         @afterChange="onAfterChange"></a-slider>
                     <p>{{ (sharedData ? !sharedData.isMobileMode ? 'From ' : '' : '') +
