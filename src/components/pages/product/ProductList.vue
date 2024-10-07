@@ -18,6 +18,13 @@
                 </label>
             </div>
 
+            <div class="relative h-4" v-if="sharedData && sharedData.isMobileMode">
+                <a-icon :type="`${settings.filters.showPriceRange ? 'up' : 'down'}-square`"
+                    v-model="settings.filters.showPriceRange"
+                    @click="setSettingVisible(!settings.filters.showPriceRange)" class="absolute right-0"
+                    theme="twoTone" two-tone-color="#1890ff" />
+            </div>
+
             <!-- filters /  sort -->
             <div v-if="settings.filters.showPriceRange" class="grid rounded border shadow p-2 mb-2
         [&>div]:border [&>div]:rounded [&>div]:p-2"
@@ -327,6 +334,10 @@ export default {
                 };
             }
             localStorage.setItem('settings', JSON.stringify(this.settings));
+        },
+        setSettingVisible(value) {
+            this.settings.filters.showPriceRange = value;
+            this.onChangeSettings('filters', { showPriceRange: value });
         },
         setStyle() {
             this.list = this.$refs.productList.$el.querySelector('ul.ant-list-items');
