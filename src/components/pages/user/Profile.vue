@@ -36,7 +36,7 @@ export default {
                 await this.me();
             } catch (error) {
                 this.$message.error(error.message);
-                this.$helpers.showCountdownMessage(5, () => {
+                this.$helpers.showCountdownMessage(1, () => {
                     this.$router.push('/auth/login');
                 });
             }

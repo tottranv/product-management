@@ -8,7 +8,7 @@ export const debounce = (func, wait = 250) => {
     }; 
 }
 
-export const showCountdownMessage = (time = 3, cb) => {
+export const showCountdownMessage = (time = 1, cb) => {
     let countdown = time;
     message.loading('Redirect to login after few seconds', 0);
 
