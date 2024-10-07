@@ -24,7 +24,7 @@
                 :class="(sharedData ? !sharedData.isMobileMode ? 'grid-cols-2 gap-4' : 'grid-cols-1 gap-2' : '')">
                 <div v-if="settings.filters.showPriceRange">
                     {{ (sharedData ? !sharedData.isMobileMode ? 'Filter by price:' : 'Price:' : '') }}
-                    <a-slider range :default-value="priceRangeFilter" :min="100000" :max="10000000" :step="100000"
+                    <a-slider range :default-value="priceRangeFilter" :min="100000" :max="1000000000" :step="200000"
                         :tip-formatter="formatCurrency" v-model="priceRangeFilter"
                         @afterChange="onAfterChange"></a-slider>
                     <p>{{ (sharedData ? !sharedData.isMobileMode ? 'From ' : '' : '') +
@@ -62,7 +62,7 @@
                         <span @click="setSort('title')"
                             class="flex items-center justify-between hover:opacity-75 underline">
                             <a-icon
-                                :type="`sort-${sort.currentSort && sort.currentSort.type === 'title' && sort.currentSort.by ? 'ascending' : 'descending'}`"
+                                :type="`sort-${sort.currentSort && sort.currentSort.type === 'title' && sort.currentSort.by ? 'descending' : 'ascending'}`"
                                 v-show="sort.enable && sort.currentSort.type === 'title'"></a-icon>
                             Product's info
                         </span>
@@ -75,7 +75,7 @@
                         <span @click="setSort('price')"
                             class="flex items-center justify-between hover:opacity-75 underline">
                             <a-icon
-                                :type="`sort-${sort.currentSort && sort.currentSort.type === 'price' && sort.currentSort.by ? 'ascending' : 'descending'}`"
+                                :type="`sort-${sort.currentSort && sort.currentSort.type === 'price' && sort.currentSort.by ? 'descending' : 'ascending'}`"
                                 v-show="sort.enable && sort.currentSort.type === 'price'"></a-icon>
                             Price
                         </span>
@@ -125,7 +125,7 @@ export default {
     inject: ['sharedData'],
     data() {
         return {
-            priceRangeFilter: [100000, 10000000],
+            priceRangeFilter: [100000, 1000000000],
             settings: getSettingsLocal(),
             //fields for product data:
             loading: false,
