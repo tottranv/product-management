@@ -22,7 +22,7 @@
                     <a-input v-decorator="['desc', { rules: [{ required: true, message: 'Please input desc' }] }]" />
                 </a-form-item>
                 <a-form-item label="In Stock">
-                    <a-checkbox v-model="in_stock" @click="!in_stock" :checked="viewProduct.in_stock" />
+                    <a-checkbox v-model="in_stock" :checked="viewProduct.in_stock" />
                 </a-form-item>
                 <a-form-item>
                     <a-button html-type="submit">Save</a-button>
@@ -105,7 +105,7 @@ export default {
                 }
             },
             immediate: true,
-        }
+        },
     },
 }
 </script>
