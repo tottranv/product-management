@@ -12,20 +12,13 @@
                 </a-card-meta>
             </template>
         </a-card>
-        <a-card>
-            <PdfViewer />
-        </a-card>
     </div>
 </template>
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import PdfViewer from './PdfViewer.vue';
 
 export default {
     name: 'ProfilePage',
-    components() {
-        PdfViewer
-    },
     mounted() {
         this.fetchMe();
         this.$helpers.setBreadcrumbFn([
