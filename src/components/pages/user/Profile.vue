@@ -1,21 +1,31 @@
 <template>
-    <a-card>
-        <template v-if="!user">
-            <a-skeleton avatar :paragraph="{ rows: 4 }" />
-        </template>
-        <template v-else>
-            <img slot="cover" alt="example" :src="user.image" class="h-40 object-cover" />
-            <a-card-meta :title="user.firstName + ' ' + user.lastName" :description="user.company && user.company.name">
-                <a-avatar slot="avatar" :src="user.image" />
-            </a-card-meta>
-        </template>
-    </a-card>
+    <div>
+        <a-card>
+            <template v-if="!user">
+                <a-skeleton avatar :paragraph="{ rows: 4 }" />
+            </template>
+            <template v-else>
+                <img slot="cover" alt="example" :src="user.image" class="h-40 object-cover" />
+                <a-card-meta :title="user.firstName + ' ' + user.lastName"
+                    :description="user.company && user.company.name">
+                    <a-avatar slot="avatar" :src="user.image" />
+                </a-card-meta>
+            </template>
+        </a-card>
+        <a-card>
+            <PdfViewer />
+        </a-card>
+    </div>
 </template>
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import PdfViewer from './PdfViewer.vue';
 
 export default {
     name: 'ProfilePage',
+    components() {
+        PdfViewer
+    },
     mounted() {
         this.fetchMe();
         this.$helpers.setBreadcrumbFn([
