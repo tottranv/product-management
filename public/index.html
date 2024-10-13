@@ -30,5 +30,19 @@
     </noscript>
     <div id="app"></div>
     <!-- built files will be auto injected -->
+
+    <script>
+      if('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js')
+          .then(registration => {
+            console.log(`ServiceWorker registered ${JSON.stringify(registration)}`);
+          })
+          .catch(error => {
+            console.log(`ServiceWorker registration failed ${error}`);
+          });
+        });
+      }
+    </script>
   </body>
 </html>
